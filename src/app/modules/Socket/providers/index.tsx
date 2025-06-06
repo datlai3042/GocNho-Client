@@ -14,7 +14,7 @@ import {
   TSocketCallVideoInfo,
   TSocketEventCall,
 } from "../../Call/providers/socketCallVideo.provider";
-const URL = process.env.NEXT_PUBLIC_MODE === "PRO" ? process.env.BACK_END_URL : "http://localhost:4004";
+const URL = process.env.NEXT_PUBLIC_MODE === "PRO" ? process.env.NEXT_PUBLIC_BACK_END_URL : "http://localhost:4004";
 
 export type TSocketContext = {
   socket: Socket | null;

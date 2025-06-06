@@ -78,7 +78,7 @@ class AuthService {
                   credentials: "include",
             };
 
-            const urlRequest = process.env.NEXT_PUBLIC_MODE === "DEV" ? "http://localhost:4004" : process.env.BACK_END_URL;
+            const urlRequest = process.env.NEXT_PUBLIC_MODE === "DEV" ? "http://localhost:4004" : process.env.NEXT_PUBLIC_BACK_END_URL;
             const callRefreshToken: ResponseInstance<ResponseAuth> = await Http.get<ResponseAuth>(`/v1/api/auth/refresh-token`, {});
             return callRefreshToken;
       }
@@ -106,8 +106,8 @@ class AuthService {
                   expireToken,
                   expireCookie,
             };
-            const urlRequest = process.env.NEXT_PUBLIC_MODE === "DEV" ? "http://localhost:5173" : process.env.CLIENT_URL;
-
+            const urlRequest = process.env.NEXT_PUBLIC_MODE === "DEV" ? "http://localhost:5173" : process.env.NEXT_PUBLIC_CLIENT_URL;
+            console.log({urlRequest})
 
             const syncToken = await fetch(`${urlRequest}/v1/api/auth/set-token`, {
                   body: JSON.stringify(bodySyncTokenAPI),
