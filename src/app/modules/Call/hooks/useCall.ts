@@ -39,30 +39,37 @@ const useCall = (props: TUseCall) => {
             }
 
             const onReceive = async (call: MediaConnection) => {
-                console.log({ peerRemoteId: peerReceiverId, receive: true, stream, streamRemote })
+                console.log({ peerRemoteId: peerReceiverId, receive: true, stream, streamRemote });
 
-                if (!stream?.current) {
-                    try {
+                try {
+                    // Nếu chưa có stream local, lấy từ camera + mic
+                    if (typeof stream === 'undefined') {
                         const streamAPI = await navigator.mediaDevices.getUserMedia({
                             video: true,
                             audio: true,
                         });
 
                         stream!.current = streamAPI;
-                        console.log({ streamAPI })
+                        console.log("✅ Lấy được stream local:", streamAPI);
                         setConnectStream(true);
-                    } catch (error: any) {
-                        console.error("Lỗi truy cập camera:", error?.name, error?.message, error);
-
                     }
+
+                    // Trả lời cuộc gọi với stream local
+                    console.log("📞 Trả lời cuộc gọi với stream local...");
+                    call.answer(stream!.current);
+
+                    // Khi nhận stream từ phía bên kia
+                    call.on('stream', (remoteStream) => {
+                        console.log("📥 Nhận stream từ peer:", peerId, remoteStream);
+                        streamRemote.current = remoteStream;
+                        setHasStream(true);
+                    });
+
+                } catch (error: any) {
+                    console.error("❌ Lỗi truy cập camera:", error?.name, error?.message, error);
                 }
-                call.answer(stream?.current)
-                call.on('stream', (stream) => {
-                    console.log({ peerId, stream })
-                    streamRemote.current = stream
-                    setHasStream(true)
-                })
-            }
+            };
+
             console.log({ peer, peerCallId, peerReceiverId, peerReady })
             peer.on('open', handleOpen)
             peer.on('call', onReceive)
