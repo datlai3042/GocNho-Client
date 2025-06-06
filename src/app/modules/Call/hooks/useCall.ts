@@ -24,11 +24,11 @@ const useCall = (props: TUseCall) => {
     }
 
 
-   
+
 
     useEffect(() => {
         try {
-            console.log({triggerCreate, peerCallId})
+            console.log({ triggerCreate, peerCallId })
             if (!triggerCreate) return
             if (peerRef.current && !peerCallId) return
             const peer = createPeer(peerCallId);
@@ -47,14 +47,12 @@ const useCall = (props: TUseCall) => {
                             video: true,
                             audio: true,
                         });
-                        if (stream?.current) {
 
-                            stream.current = streamAPI;
-                        }
-                        console.log({streamAPI})
+                        stream!.current = streamAPI;
+                        console.log({ streamAPI })
                         setConnectStream(true);
                     } catch (error: any) {
-                          console.error("Lỗi truy cập camera:", error?.name, error?.message, error);
+                        console.error("Lỗi truy cập camera:", error?.name, error?.message, error);
 
                     }
                 }
@@ -85,7 +83,7 @@ const useCall = (props: TUseCall) => {
             // peer.off('open', handleOpen)
             // peer.off('call', onReceive)
         }
-    }, [ triggerCreate, pendingAccpet])
+    }, [triggerCreate])
 
     const [hasStream, setHasStream] = useState(false)
     const [connectStream, setConnectStream] = useState(false)
