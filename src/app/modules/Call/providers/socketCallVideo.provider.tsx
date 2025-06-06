@@ -1,29 +1,24 @@
 "use client";
 import Portal from "@/app/core/Components/Store/Portal";
+import { RootState } from "@/lib/Redux/store";
 import { motion } from "motion/react";
 import Image from "next/image";
 import React, {
   createContext,
-  SetStateAction,
   useCallback,
   useContext,
   useEffect,
   useMemo,
-  useRef,
-  useState,
+  useState
 } from "react";
+import { useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
+import { ChannelCommonData } from "..";
 import { SocketContext } from "../../Socket/providers";
 import { UserType } from "../../User/index.type";
 import ButtonAcceptCall from "../components/ButtonAcceptCall";
 import ButtonRejectCall from "../components/ButtonRejectCall";
-import useCall from "../hooks/useCall";
 import { TCallSchema } from "../types/call.type";
-import { useSearchParams } from "next/navigation";
-import { channel } from "diagnostics_channel";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/Redux/store";
-import { ChannelCommonData } from "..";
 export type TSocketEventCall = {
   caller_id: string;
   receiver_id: string;

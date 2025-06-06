@@ -13,10 +13,16 @@ export const generateInfoRequest = (url: string, options: RequestCustome) => {
 
     let baseUrl = "http://localhost:4004";
     if (options?.baseUrl === undefined) {
-        if (false) {
+        if (process.env.NEXT_PUBLIC_MODE === "DEV") {
             baseUrl = "http://localhost:4004";
         } else {
-            baseUrl = 'https://corestreamcallvideo.onrender.com';
+            baseUrl = process.env.NEXT_PUBLIC_BACK_END_URL as string;
+        }
+    } else {
+        if (process.env.NEXT_PUBLIC_MODE === "DEV") {
+            baseUrl = "http://localhost:5173";
+        } else {
+            baseUrl = process.env.NEXT_PUBLIC_CLIENT_URL as string;
         }
     }
 

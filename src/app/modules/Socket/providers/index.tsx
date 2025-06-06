@@ -1,5 +1,4 @@
 "use client";
-const URL = "https://core-stream-call-video.vercel.app";
 import {
   createContext,
   useCallback,
@@ -15,6 +14,7 @@ import {
   TSocketCallVideoInfo,
   TSocketEventCall,
 } from "../../Call/providers/socketCallVideo.provider";
+const URL = process.env.NEXT_PUBLIC_MODE === "PRO" ? process.env.BACK_END_URL : "http://localhost:4004";
 
 export type TSocketContext = {
   socket: Socket | null;
