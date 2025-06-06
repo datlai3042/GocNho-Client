@@ -26,12 +26,13 @@ const VideoCallRemote = () => {
   const videoRemoteef = useRef<HTMLVideoElement | null>(null);
   useEffect(() => {
     console.log("step2-remote");
-    console.log({ instanceHook });
     if (
       instanceHook?.hasStream &&
       instanceHook.streamRemote?.current &&
       videoRemoteef.current
     ) {
+    console.log({ instanceHook });
+
       videoRemoteef.current.srcObject = instanceHook.streamRemote.current;
       videoRemoteef.current.play();
     }
@@ -51,13 +52,14 @@ const VideoCallMe = () => {
 
   useEffect(() => {
     console.log("step1-local");
-    console.log({ instanceHook });
 
     if (
       instanceHook?.connectStream &&
       instanceHook.stream?.current &&
       videoMeRef.current
     ) {
+    console.log({ instanceHook });
+      
       videoMeRef.current.srcObject = instanceHook.stream.current;
       videoMeRef.current.play();
     }
