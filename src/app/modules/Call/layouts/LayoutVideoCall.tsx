@@ -25,7 +25,7 @@ const VideoCallRemote = () => {
 
   const videoRemoteef = useRef<HTMLVideoElement | null>(null);
   useEffect(() => {
-    console.log("step2");
+    console.log("step2-remote");
     console.log({ instanceHook });
     if (
       instanceHook?.hasStream &&
@@ -50,7 +50,7 @@ const VideoCallMe = () => {
   const videoMeRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    console.log("step1");
+    console.log("step1-local");
     console.log({ instanceHook });
 
     if (
