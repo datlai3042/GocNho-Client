@@ -4,9 +4,9 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "../styles/styles.module.scss";
 import { SocketCallVideoContext } from "../providers/socketCallVideo.provider";
 import { CallContext } from "../providers";
+
 const LayoutVideoCall = () => {
   const { infoCall } = useContext(SocketCallVideoContext);
-  const { instanceHook } = useContext(CallContext);
   return (
     <div id={`${styles.call__container}`}>
       {infoCall?.call_status === "CREATE" && <span>Đang kết nối</span>}
@@ -20,61 +20,49 @@ const LayoutVideoCall = () => {
 };
 
 const VideoCallRemote = () => {
-  const { infoCall } = useContext(SocketCallVideoContext);
   const { instanceHook } = useContext(CallContext);
+  const videoRemoteRef = useRef<HTMLVideoElement | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
-  const videoRemoteef = useRef<HTMLVideoElement | null>(null);
+  // Cập nhật remoteStream mỗi khi instanceHook.hasStream thay đổi
   useEffect(() => {
-    console.log("step2-remote");
-    if (
-      instanceHook?.hasStream &&
-      instanceHook.streamRemote?.current &&
-      videoRemoteef.current
-    ) {
-      console.log({ instanceHook });
-      console.log("🎥 srcObject:", videoRemoteef.current?.srcObject);
-      const tracks = instanceHook.streamRemote?.current?.getVideoTracks();
-      console.log("🎥 Video track:", tracks?.[0], tracks?.[0]?.readyState);
-      instanceHook?.streamRemote.current.getVideoTracks().forEach((track) => {
-        console.log(
-          "🔍 Track enabled:",
-          track.enabled,
-          "readyState:",
-          track.readyState
-        );
-      });
-
-      videoRemoteef.current.srcObject = instanceHook.streamRemote.current;
-      videoRemoteef.current.play();
+    if (instanceHook?.hasStream && instanceHook.streamRemote?.current) {
+      setRemoteStream(instanceHook.streamRemote.current);
     }
-  }, [instanceHook?.hasStream]);
+  }, [instanceHook?.hasStream, instanceHook?.streamRemote?.current]);
+
+  // Gán remoteStream vào video element
+  useEffect(() => {
+    if (videoRemoteRef.current && remoteStream) {
+      videoRemoteRef.current.srcObject = remoteStream;
+    }
+  }, [remoteStream]);
+
   return (
     <div className={`${styles.videoCallRemote__container}`}>
-      <video ref={videoRemoteef} muted></video>
+      <video
+        ref={videoRemoteRef}
+        autoPlay
+        playsInline
+        style={{ background: "#000", width: "100%", height: "100%" }}
+      ></video>
     </div>
   );
 };
 
 const VideoCallMe = () => {
-  const { infoCall } = useContext(SocketCallVideoContext);
   const { instanceHook } = useContext(CallContext);
-
   const videoMeRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    console.log("step1-local");
-
     if (
       instanceHook?.connectStream &&
       instanceHook.stream?.current &&
       videoMeRef.current
     ) {
-      console.log({ instanceHook });
-
       videoMeRef.current.srcObject = instanceHook.stream.current;
-      videoMeRef.current.play();
     }
-  }, [instanceHook?.connectStream]);
+  }, [instanceHook?.connectStream, instanceHook?.stream?.current]);
 
   return (
     <div className={`${styles.videoCallMe__container}`}>
