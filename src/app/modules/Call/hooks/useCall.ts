@@ -53,7 +53,7 @@ const useCall = (props: TUseCall) => {
                         console.log("✅ Lấy được stream local:", streamAPI);
                         setConnectStream(true);
                     }
-
+console.log({stream})
                     // Trả lời cuộc gọi với stream local
                     console.log("📞 Trả lời cuộc gọi với stream local...");
                     call.answer(stream!.current);
