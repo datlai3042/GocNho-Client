@@ -43,7 +43,7 @@ const useCall = (props: TUseCall) => {
 
                 try {
                     // Nếu chưa có stream local, lấy từ camera + mic
-                    if (typeof stream === 'undefined') {
+                    if (typeof stream?.current === 'undefined') {
                         const streamAPI = await navigator.mediaDevices.getUserMedia({
                             video: true,
                             audio: true,
