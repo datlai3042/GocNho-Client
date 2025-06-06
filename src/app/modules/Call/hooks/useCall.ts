@@ -90,7 +90,7 @@ const useCall = (props: TUseCall) => {
             // peer.off('open', handleOpen)
             // peer.off('call', onReceive)
         }
-    }, [triggerCreate])
+    }, [triggerCreate, peerCallId])
 
     const [hasStream, setHasStream] = useState(false)
     const [connectStream, setConnectStream] = useState(false)
