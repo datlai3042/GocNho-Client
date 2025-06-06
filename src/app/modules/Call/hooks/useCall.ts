@@ -115,7 +115,6 @@ console.log({stream})
                 console.error('peer.call failed – remote peer not found')
                 return
             }
-            alert(`Đã gửi tới ${peerReceiverId}`)
             call.on('stream', (remoteStream) => {
                 streamRemote.current = remoteStream
                 console.log('co stream', remoteStream)

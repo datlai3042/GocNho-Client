@@ -31,7 +31,16 @@ const VideoCallRemote = () => {
       instanceHook.streamRemote?.current &&
       videoRemoteef.current
     ) {
-    console.log({ instanceHook });
+      console.log({ instanceHook });
+
+      instanceHook?.streamRemote.current.getVideoTracks().forEach((track) => {
+        console.log(
+          "🔍 Track enabled:",
+          track.enabled,
+          "readyState:",
+          track.readyState
+        );
+      });
 
       videoRemoteef.current.srcObject = instanceHook.streamRemote.current;
       videoRemoteef.current.play();
@@ -58,8 +67,8 @@ const VideoCallMe = () => {
       instanceHook.stream?.current &&
       videoMeRef.current
     ) {
-    console.log({ instanceHook });
-      
+      console.log({ instanceHook });
+
       videoMeRef.current.srcObject = instanceHook.stream.current;
       videoMeRef.current.play();
     }
@@ -67,7 +76,7 @@ const VideoCallMe = () => {
 
   return (
     <div className={`${styles.videoCallMe__container}`}>
-      <video ref={videoMeRef} muted></video>
+      <video ref={videoMeRef} autoPlay playsInline></video>
     </div>
   );
 };
