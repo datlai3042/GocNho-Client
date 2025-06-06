@@ -11,7 +11,16 @@ export function createPeer(id: string): Peer {
     peerInstance.destroy(); // cleanup peer cũ nếu chưa open
   }
 
-  peerInstance = new Peer(id); // 👈 custom ID
+  peerInstance = new Peer(id,
+
+    {
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+        ]
+      }
+    }
+  ); // 👈 custom ID
   return peerInstance;
 }
 
