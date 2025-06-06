@@ -199,6 +199,8 @@ const SocketCallVideoProvider = ({
     undefined
   );
   const createCall = (userEvent: UserType) => {
+    console.log({userEvent, })
+
     const url = `/call?caller_id=${user?._id}&receiver_id=${userEvent?._id}&onwer_id=${user?._id}`;
 
     const windowFeatures =
@@ -217,6 +219,7 @@ const SocketCallVideoProvider = ({
       console.log({data})
       if (data?.type === "CREATE_CALL_OF_SOCKET") {
         const { caller_id, onwer_id, receiver_id } = data?.payload;
+        console.log({message: 'CREATE_CALL_OF_SOCKET'})
         emitCall({ caller_id, receiver_id, onwer_id });
       }
     };
@@ -228,7 +231,7 @@ const SocketCallVideoProvider = ({
     };
   }, [channelName, socket]);
   useEffect(() => {
-    if (!socket) return;
+    if (!socket ) return;
     socket.on(
       SocketVideoCallEvent.emitRejectCall,
       (args: TSocketCallVideoInfo) => {
@@ -239,7 +242,10 @@ const SocketCallVideoProvider = ({
       }
     );
     SocketCallVideo.onAcceptCall(socket, (args: TSocketEventCall) => {
-      videoCallChannel.postMessage({ type: "ON_ACCEPT_CALL" });
+      if(user?._id !== args.receiver_id) {
+
+        videoCallChannel.postMessage({ type: "ON_ACCEPT_CALL" });
+      }
     });
 
     SocketCallVideo.isRequestPending(socket, (args: TSocketCallVideoInfo) => {

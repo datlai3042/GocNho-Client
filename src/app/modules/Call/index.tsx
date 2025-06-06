@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useSearchParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import CallProvier from "./providers";
 import LayoutVideoCall from "./layouts/LayoutVideoCall";
 import {
@@ -31,7 +31,7 @@ const isOwnerCall = (
 const tabName = "call";
 const CallView = () => {
   const [createCallInstance, setCreateCallInstance] = useState(false);
-  useGetMe();
+  const { getMe } = useGetMe();
 
   const qs = useSearchParams();
   const [channelActive, setChanelActive] = useState(false);
@@ -39,19 +39,21 @@ const CallView = () => {
   const receiver_id = qs.get("receiver_id");
   const onwer_id = qs.get("onwer_id");
   const user = useSelector((state: RootState) => state.authStore.user);
+  const [trigger, setTrigger] = useState(false);
   const streamRef = useRef<MediaStream | undefined>(undefined);
-  const isOwner = isOwnerCall(user, caller_id || "");
+  const isOwner = useMemo(() => {
+    return isOwnerCall(user, caller_id || "");
+  }, [getMe.isPending, getMe])
   const callHook = useCall({
     triggerCreate: createCallInstance,
     peerCallId: isOwner ? caller_id || "" : receiver_id || "",
     peerReceiverId: isOwner ? receiver_id || "" : caller_id || "",
     stream: streamRef,
   });
-
- 
+  console.log({callHook})
   useEffect(() => {
-    if (!caller_id || !onwer_id || !receiver_id || !user) return;
-    console.log({ isOwner });
+    console.log({ caller_id, onwer_id, receiver_id, isOwner });
+    if (!caller_id || !onwer_id || !receiver_id) return;
     if (isOwner) {
       videoCallChannel.postMessage({
         type: "CREATE_CALL_OF_SOCKET",
@@ -63,10 +65,10 @@ const CallView = () => {
         },
       });
     }
-    if (user && receiver_id === onwer_id) {
+    if (receiver_id === onwer_id) {
       setCreateCallInstance(true);
     }
-  }, [channelName, user, receiver_id]);
+  }, [channelName, receiver_id, isOwner]);
 
   useEffect(() => {
     if (createCallInstance && isOwner) {
@@ -89,6 +91,16 @@ const CallView = () => {
       videoCallChannel.removeEventListener("message", handler);
     };
   }, [channelName, channelActive, user]);
+
+  useEffect(() => {
+    console.log({ getMe });
+    if (getMe.isSuccess && !getMe.isPending) {
+      setTrigger(true);
+    }
+  }, [getMe.isPending, getMe.isSuccess]);
+
+  if (!trigger) return <>...loading</>;
+
   return (
     <CallProvier instanceHook={callHook}>
       <LayoutVideoCall />

@@ -24,30 +24,7 @@ const useCall = (props: TUseCall) => {
     }
 
 
-    const onReceive = useCallback(async (call: MediaConnection) => {
-        console.log({ peerRemoteId: peerReceiverId, receive: true, stream, streamRemote })
-
-        if (!stream?.current) {
-            try {
-                const streamAPI = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true,
-                });
-                if (stream?.current) {
-
-                    stream.current = streamAPI;
-                }
-                setConnectStream(true);
-            } catch (error) {
-                console.log({ error });
-            }
-        }
-        call.answer(stream?.current)
-        call.on('stream', (stream) => {
-            streamRemote.current = stream
-            setHasStream(true)
-        })
-    }, [])
+   
 
     useEffect(() => {
         try {
@@ -83,7 +60,7 @@ const useCall = (props: TUseCall) => {
                 }
                 call.answer(stream?.current)
                 call.on('stream', (stream) => {
-                    console.log({ peerId })
+                    console.log({ peerId, stream })
                     streamRemote.current = stream
                     setHasStream(true)
                 })
@@ -115,18 +92,15 @@ const useCall = (props: TUseCall) => {
 
     const onCall = useCallback(async () => {
 
-        console.log({ peerRemoteId: peerReceiverId, call: true, stream, streamRemote, peerReceiverId, peerRef })
         if (!peerReceiverId || !peerRef.current || !peerRef.current) return
 
         try {
             console.log('cai gi vay')
-            console.log({ pendingAccpet, peerReceiverId })
 
             const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             stream!.current = localStream; // ✅ Gán vào ref được truyền từ props
 
             setConnectStream(true);
-            console.log({ pendingAccpet, peerReceiverId })
             if (!pendingAccpet) return
 
 
@@ -139,7 +113,7 @@ const useCall = (props: TUseCall) => {
             alert(`Đã gửi tới ${peerReceiverId}`)
             call.on('stream', (remoteStream) => {
                 streamRemote.current = remoteStream
-                console.log('co stream')
+                console.log('co stream', remoteStream)
                 setHasStream(true)
             })
 
@@ -148,7 +122,7 @@ const useCall = (props: TUseCall) => {
         } catch (err) {
             console.error('Error getting media or calling peer:', err)
         }
-    }, [connectStream, peerReceiverId, pendingAccpet])
+    }, [connectStream, pendingAccpet])
 
     const getValueHook = () => {
         return { onCall, streamRemote, stream, hasStream, setPeerRemoteId, setPeerId, peerId, connectStream, peerRemoteId, peerReady, destroy }
