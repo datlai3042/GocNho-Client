@@ -32,7 +32,9 @@ const VideoCallRemote = () => {
       videoRemoteef.current
     ) {
       console.log({ instanceHook });
-
+      console.log("🎥 srcObject:", videoRemoteef.current?.srcObject);
+      const tracks = instanceHook.streamRemote?.current?.getVideoTracks();
+      console.log("🎥 Video track:", tracks?.[0], tracks?.[0]?.readyState);
       instanceHook?.streamRemote.current.getVideoTracks().forEach((track) => {
         console.log(
           "🔍 Track enabled:",
