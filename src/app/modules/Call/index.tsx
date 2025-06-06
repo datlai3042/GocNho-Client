@@ -45,7 +45,7 @@ const CallView = () => {
     return isOwnerCall(user, caller_id || "");
   }, [getMe.isPending, getMe])
   const callHook = useCall({
-    triggerCreate: createCallInstance,
+    triggerCreate: !!user && createCallInstance,
     peerCallId: isOwner ? caller_id || "" : receiver_id || "",
     peerReceiverId: isOwner ? receiver_id || "" : caller_id || "",
     stream: streamRef,
