@@ -17,6 +17,11 @@ export function createPeer(id: string): Peer {
       config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
+           {
+        urls: 'turn:103.169.35.220:3478',
+        username: 'ngaymaivanden',
+        credential: '304'
+      }
         ]
       }
     }
