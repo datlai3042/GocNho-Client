@@ -6,20 +6,12 @@ import { SocketCallVideoContext } from "../providers/socketCallVideo.provider";
 import ButtonRejectCall from "../components/ButtonRejectCall";
 import ButtonAcceptCall from "../components/ButtonAcceptCall";
 import { CallContext } from "..";
+import ButtonEndCall from "../components/ButtonEndCall";
+import ButtonDisableMicro from "../components/ButtonDisableMicro";
 
 const LayoutVideoCall = () => {
-  // useEffect(() => {
-  //   const eventLeaving = (event: BeforeUnloadEvent) => {
-  //       instanceHook?.destroy();
-  //       handleEventCall.emitRejectCall(infoCall!);
-  //   };
-  //   window.addEventListener("beforeunload", eventLeaving);
-  //   return () => {
-  //     window.removeEventListener("beforeunload", eventLeaving);
-  //   };
-  // }, []);
+
   const { infoCall } = useContext(CallContext);
-  console.log({ infoCall });
   return (
     <div id={`${styles.call__container}`}>
       {infoCall?.call_status === "CREATE" && (
@@ -29,7 +21,6 @@ const LayoutVideoCall = () => {
       )}
       <VideoCallController />
       {infoCall?.call_status === "REJECT" && <span>Không bắt máy</span>}
-
       <VideoCallMe />
       {infoCall?.call_status === "ACCPET" && (
         <>
@@ -58,7 +49,6 @@ const VideoCallRemote = () => {
   const { instanceHook } = useContext(CallContext);
   const videoRemoteRef = useRef<HTMLVideoElement | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-console.log({instanceHook})
   // Cập nhật remoteStream mỗi khi instanceHook.hasStream thay đổi
   useEffect(() => {
     if (instanceHook?.hasStream && instanceHook.streamRemote?.current) {
@@ -109,8 +99,8 @@ const VideoCallMe = () => {
 const VideoCallController = () => {
   return (
     <div className={`${styles.videoCallController__container}`}>
-      <ButtonRejectCall />
-      <ButtonAcceptCall />
+      <ButtonDisableMicro />
+      <ButtonEndCall />
     </div>
   );
 };
@@ -118,7 +108,7 @@ const VideoCallController = () => {
 const VideoCallEndUI = () => {
   return (
     <div className={`${styles.videoCallEndUI__container}`}>
-      <span>Cuộc gọi đã kết thúc</span>
+      <span className="text-[#fff] text-[2.4rem]">Cuộc gọi đã kết thúc</span>
     </div>
   );
 };

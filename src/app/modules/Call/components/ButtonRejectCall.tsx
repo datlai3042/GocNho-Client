@@ -4,7 +4,7 @@ import {
   SocketCallVideoContext,
   videoCallChannel,
 } from "../providers/socketCallVideo.provider";
-import { CallContext } from "../providers";
+import { CallContext } from "..";
 
 const ButtonRejectCall = () => {
   const { handleEventCall, infoCall } = useContext(SocketCallVideoContext);

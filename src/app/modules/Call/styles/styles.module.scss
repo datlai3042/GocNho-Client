@@ -14,16 +14,18 @@
     height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     background-color: #242323;
   }
   .videoCallRemote__container video {
-    height: 50vh !important;
+    height: 82vh !important;
+    width: 90rem !important;
+    margin-top: 4rem;
     object-fit: cover !important;
   }
   .videoCallMe__container {
     position: absolute;
-    top: 4rem;
+    top: 4.6rem;
     right: 2rem;
     width: 18rem;
     height: 14rem;
@@ -33,12 +35,23 @@
     position: absolute;
     bottom: 2rem;
     left: 50%;
-    height: 5rem;
+    height: 6rem;
     transform: translate3d(-50%, 0, 0);
-    width: 50rem;
+    width: max-content;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 4rem;
+    padding: 3.2rem;
+    border-radius: .8rem;
+    background-color: #494b5070;
+  }
+
+  .videoCallEndUI__container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

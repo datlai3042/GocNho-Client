@@ -37,14 +37,15 @@ export enum SocketVideoCallEvent {
   emitRequestCall = "emitRequestCall",
   onWaitingConnect = "onWaitingConnect",
   onOpenConnect = "onOpenConnect",
-
+  onCancelCall = "onCancelCall",
   emitRejectCall = "emitRejectCall",
   emitAccpetCall = "emitAccpetCall",
-
+  emitCancelCall = "emitCancelCall",
   onAcceptCall = "onAcceptCall",
   onRejectCall = "onRejectCall",
   onPendingCall = "onPendingCall",
   onConnectStream = "onConnectStream",
+  ON_CLOSE_WINDOW_CALL = "ON_CLOSE_WINDOW_CALL",
 }
 
 export const channelName = "call_video";
@@ -127,6 +128,23 @@ class SocketCallVideo {
       callback();
     }
   }
+
+  static async emitCancelCall(
+    socket: Socket,
+    user_emitter: UserType,
+    args: TSocketEventCall,
+    callback?: () => void
+  ) {
+    socket.emit(SocketVideoCallEvent.emitCancelCall, {
+      ...args,
+      user_emitter_id: user_emitter?._id,
+    });
+    SocketCallVideo.clearEvent(socket);
+    if (callback) {
+      callback();
+    }
+  }
+
   static async onRejectCall(
     socket: Socket,
     args: TSocketEventCall,
@@ -155,6 +173,19 @@ class SocketCallVideo {
       }
     );
   }
+  static async onCancelCall(
+    socket: Socket,
+    callback?: (args: TSocketCallVideoInfo) => void
+  ) {
+    socket.on(
+      SocketVideoCallEvent.onCancelCall,
+      (args: TSocketCallVideoInfo) => {
+        if (callback) {
+          callback(args);
+        }
+      }
+    );
+  }
 
   static async onWaitingConnect(
     socket: Socket,
@@ -164,7 +195,6 @@ class SocketCallVideo {
     socket.on(
       SocketVideoCallEvent.onWaitingConnect,
       (args: TSocketCallVideoInfo) => {
-        console.log({ args });
         if (callback) {
           callback(args);
         }
@@ -188,6 +218,7 @@ type TSocketCallVideoEvent = {
     createCall: (userEvent: UserType) => void;
     emitAccpetCall: (args: TSocketEventCall) => void;
     emitRejectCall: (args: TSocketEventCall) => void;
+    emitCancelCall: (args: TSocketEventCall, user: UserType) => void;
   };
 };
 
@@ -199,6 +230,7 @@ export const SocketCallVideoContext = createContext<
     createCall: (userEvent) => {},
     emitAccpetCall: (args: TSocketEventCall) => {},
     emitRejectCall: (args: TSocketEventCall) => {},
+    emitCancelCall: (args: TSocketEventCall, user: UserType) => {},
   },
   infoUserCall: undefined,
   infoCall: undefined,
@@ -226,6 +258,8 @@ const SocketCallVideoProvider = ({
     window.open(url, "_blank", windowFeatures);
   };
 
+  console.log({ user });
+
   useEffect(() => {
     const handler = (
       event: MessageEvent<ChannelCommonData<TSocketEventCall>>
@@ -237,6 +271,18 @@ const SocketCallVideoProvider = ({
         console.log({ message: "CREATE_CALL_OF_SOCKET" });
         emitCall({ caller_id, receiver_id, onwer_id });
       }
+
+      if (data?.type === "END_CALL_OF_SOCKET") {
+        const { caller_id, onwer_id, receiver_id } = data?.payload;
+        console.log({ message: "END_CALL_OF_SOCKET" });
+        handleEventCall.emitCancelCall(data?.payload, user as UserType);
+      }
+
+      if (data?.type === "ON_CLOSE_WINDOW_CALL") {
+        const { caller_id, onwer_id, receiver_id, call_id } = data?.payload;
+        console.log({ message: "ON_CLOSE_WINDOW_CALL" });
+        handleEventCall.emitCancelCall(data?.payload, user as UserType);
+      }
     };
 
     videoCallChannel.addEventListener("message", handler);
@@ -244,7 +290,7 @@ const SocketCallVideoProvider = ({
     return () => {
       videoCallChannel.removeEventListener("message", handler);
     };
-  }, [channelName, socket]);
+  }, [channelName, socket, user]);
   useEffect(() => {
     if (!socket) return;
     socket.on(
@@ -283,13 +329,21 @@ const SocketCallVideoProvider = ({
     });
     socket.on(SocketVideoCallEvent.onOpenConnect, (args: TSocketEventCall) => {
       setInfoCall(args);
-      console.log("ok nè", args);
       setTimeout(() => {
         videoCallChannel.postMessage({
           type: SocketVideoCallEvent.onOpenConnect,
           payload: args,
         });
       }, 2500);
+    });
+    socket.on(SocketVideoCallEvent.onCancelCall, (args: TSocketEventCall) => {
+      console.log("onCancelCall", args);
+
+      setInfoCall(args);
+      videoCallChannel.postMessage({
+        type: SocketVideoCallEvent.onCancelCall,
+        payload: args,
+      });
     });
   }, [socket]);
   const emitCall = useCallback(
@@ -329,11 +383,25 @@ const SocketCallVideoProvider = ({
     },
     [socket]
   );
+  const emitCancelCall = useCallback(
+    (args: TSocketEventCall, user: UserType) => {
+      if (!socket) return;
+      SocketCallVideo?.emitCancelCall(socket, user as UserType, args, () => {
+        const newInfoCall = {...structuredClone(infoCall as TSocketEventCall),  call_status: "COMPLETE" as const,}
+        setInfoCall(newInfoCall);
+        videoCallChannel.postMessage({type: 'CLOSE_CALL', payload: newInfoCall})
+      });
+    },
+    [socket, user]
+  );
+
+
   const handleEventCall = useMemo(() => {
     return {
       createCall,
       emitAccpetCall,
       emitRejectCall,
+      emitCancelCall,
     };
   }, [socket, user]);
 

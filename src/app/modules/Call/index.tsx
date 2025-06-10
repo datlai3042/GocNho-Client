@@ -32,7 +32,6 @@ const isOwnerCall = (
   userCurrent: UserType | null | undefined,
   compareId: string
 ) => {
-  console.log({ userCurrent, compareId });
   return !userCurrent ? false : userCurrent?._id === compareId;
 };
 
@@ -55,7 +54,6 @@ const CallView = () => {
   const { getMe } = useGetMe();
 
   const qs = useSearchParams();
-  const [channelActive, setChanelActive] = useState(false);
   const caller_id = qs.get("caller_id");
   const receiver_id = qs.get("receiver_id");
   const onwer_id = qs.get("onwer_id");
@@ -74,9 +72,7 @@ const CallView = () => {
   const [infoCall, setInfoCall] = useState<TSocketEventCall | undefined>(
     undefined
   );
-  console.log({ callHook });
   useEffect(() => {
-    console.log({ caller_id, onwer_id, receiver_id, isOwner });
     if (!caller_id || !onwer_id || !receiver_id) return;
     if (isOwner) {
       videoCallChannel.postMessage({
@@ -100,12 +96,10 @@ const CallView = () => {
     }
   }, [createCallInstance, isOwner]);
   useEffect(() => {
-    console.log('alo')
     const handler = (
       event: MessageEvent<ChannelCommonData<TSocketEventCall>>
     ) => {
-      console.log("🎧 Nhận tin:", event.data);
-      console.log({ event });
+      console.log("🎧 Nhận tin:", event);
       const { data, type } = event;
 
       if (data?.type === "ON_ACCEPT_CALL") {
@@ -113,13 +107,19 @@ const CallView = () => {
         setInfoCall(data?.payload);
       }
 
-
-       if (data?.type === SocketVideoCallEvent.onOpenConnect) {
-        console.log({data})
+      if (data?.type === SocketVideoCallEvent.onOpenConnect) {
         setInfoCall(data?.payload);
       }
 
       if (data?.type === SocketVideoCallEvent.onWaitingConnect) {
+        setInfoCall(data?.payload);
+      }
+
+      if (data?.type === SocketVideoCallEvent.onCancelCall) {
+        setInfoCall(data?.payload);
+      }
+
+       if (data?.type === 'CLOSE_CALL') {
         setInfoCall(data?.payload);
       }
     };
@@ -128,13 +128,26 @@ const CallView = () => {
     return () => {
       videoCallChannel.removeEventListener("message", handler);
     };
-  }, [channelName, channelActive, user]);
+  }, [channelName, user]);
 
   useEffect(() => {
     if (getMe.isSuccess && !getMe.isPending) {
       setTrigger(true);
     }
   }, [getMe.isPending, getMe.isSuccess]);
+
+  // useEffect(() => {
+  //   const eventLeaving = (event: BeforeUnloadEvent) => {
+  //     callHook?.destroy();
+  //     if (infoCall?.call_status !== "COMPLETE") {
+  //       videoCallChannel.postMessage({ type: "ON_CLOSE_WINDOW_CALL" });
+  //     }
+  //   };
+  //   window.addEventListener("beforeunload", eventLeaving);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", eventLeaving);
+  //   };
+  // }, []);
 
   if (!trigger) return <>...loading</>;
 

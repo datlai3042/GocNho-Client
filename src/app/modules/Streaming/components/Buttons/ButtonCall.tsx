@@ -15,7 +15,6 @@ type TProps = {
 const ButtonCall = (props: TProps) => {
   const {handleEventCall} = useContext(SocketCallVideoContext)
 
-    console.log({props})
   return <button onClick={() => handleEventCall.createCall(props.userEvent)}>
     <Phone size={16} />
   </button>;

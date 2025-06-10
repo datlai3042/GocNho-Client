@@ -9,6 +9,12 @@ type TUseCall = {
     triggerCreate: boolean
 }
 
+const CONFIG_VIDEO = {
+    width: { ideal: 1280 }, // hoặc 1920 cho FullHD
+    height: { ideal: 720 }, // hoặc 1080 cho FullHD
+    frameRate: { ideal: 30, max: 60 }
+}
+
 
 const useCall = (props: TUseCall) => {
     let { stream, peerReceiverId, peerCallId, triggerCreate } = props
@@ -46,7 +52,7 @@ const useCall = (props: TUseCall) => {
                     // Nếu chưa có stream local, lấy từ camera + mic
                     if (typeof stream?.current === 'undefined') {
                         const streamAPI = await navigator.mediaDevices.getUserMedia({
-                            video: true,
+                            video: CONFIG_VIDEO,
                             audio: true,
                         });
 
@@ -61,7 +67,7 @@ const useCall = (props: TUseCall) => {
                     // Khi nhận stream từ phía bên kia
                     call.on('stream', (remoteStream) => {
                         console.log("📥 Nhận stream từ peer:", peerId, remoteStream);
-                         console.log("Tracks:", remoteStream.getTracks());
+                        console.log("Tracks:", remoteStream.getTracks());
 
                         streamRemote.current = remoteStream;
                         setHasStream(true);
@@ -103,7 +109,7 @@ const useCall = (props: TUseCall) => {
 
         try {
 
-            const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            const localStream = await navigator.mediaDevices.getUserMedia({ video: CONFIG_VIDEO, audio: true })
             stream!.current = localStream; // ✅ Gán vào ref được truyền từ props
 
             setConnectStream(true);

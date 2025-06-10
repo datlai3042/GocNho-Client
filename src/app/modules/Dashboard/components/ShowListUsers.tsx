@@ -23,7 +23,6 @@ const ShowListUsers = () => {
 
         }
     })
-    console.log({ hookUserList })
     return (
         <div className='flex flex-wrap gap-[2rem]'>
 
