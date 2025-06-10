@@ -258,14 +258,12 @@ const SocketCallVideoProvider = ({
     window.open(url, "_blank", windowFeatures);
   };
 
-  console.log({ user });
 
   useEffect(() => {
     const handler = (
       event: MessageEvent<ChannelCommonData<TSocketEventCall>>
     ) => {
       const { data } = event;
-      console.log({ data });
       if (data?.type === "CREATE_CALL_OF_SOCKET") {
         const { caller_id, onwer_id, receiver_id } = data?.payload;
         console.log({ message: "CREATE_CALL_OF_SOCKET" });

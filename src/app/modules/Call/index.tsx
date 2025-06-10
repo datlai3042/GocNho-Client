@@ -136,18 +136,18 @@ const CallView = () => {
     }
   }, [getMe.isPending, getMe.isSuccess]);
 
-  // useEffect(() => {
-  //   const eventLeaving = (event: BeforeUnloadEvent) => {
-  //     callHook?.destroy();
-  //     if (infoCall?.call_status !== "COMPLETE") {
-  //       videoCallChannel.postMessage({ type: "ON_CLOSE_WINDOW_CALL" });
-  //     }
-  //   };
-  //   window.addEventListener("beforeunload", eventLeaving);
-  //   return () => {
-  //     window.removeEventListener("beforeunload", eventLeaving);
-  //   };
-  // }, []);
+  useEffect(() => {
+    const eventLeaving = (event: BeforeUnloadEvent) => {
+      callHook?.destroy();
+      if (infoCall?.call_status !== "COMPLETE") {
+        videoCallChannel.postMessage({ type: "ON_CLOSE_WINDOW_CALL" });
+      }
+    };
+    window.addEventListener("beforeunload", eventLeaving);
+    return () => {
+      window.removeEventListener("beforeunload", eventLeaving);
+    };
+  }, []);
 
   if (!trigger) return <>...loading</>;
 
