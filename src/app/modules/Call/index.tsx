@@ -100,6 +100,7 @@ const CallView = () => {
     }
   }, [createCallInstance, isOwner]);
   useEffect(() => {
+    console.log('alo')
     const handler = (
       event: MessageEvent<ChannelCommonData<TSocketEventCall>>
     ) => {
@@ -110,11 +111,15 @@ const CallView = () => {
       if (data?.type === "ON_ACCEPT_CALL") {
         setCreateCallInstance(true);
         setInfoCall(data?.payload);
+      }
+
+
+       if (data?.type === SocketVideoCallEvent.onOpenConnect) {
         console.log({data})
+        setInfoCall(data?.payload);
       }
 
       if (data?.type === SocketVideoCallEvent.onWaitingConnect) {
-        console.log({data})
         setInfoCall(data?.payload);
       }
     };

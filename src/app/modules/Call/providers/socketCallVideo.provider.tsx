@@ -36,6 +36,7 @@ export enum SocketVideoCallEvent {
   emitInitVideoCall = "emitInitVideoCall",
   emitRequestCall = "emitRequestCall",
   onWaitingConnect = "onWaitingConnect",
+  onOpenConnect = "onOpenConnect",
 
   emitRejectCall = "emitRejectCall",
   emitAccpetCall = "emitAccpetCall",
@@ -280,6 +281,16 @@ const SocketCallVideoProvider = ({
       setInfoUserCall(args.infoUserCall);
       setInfoCall({ caller_id, onwer_id, receiver_id, call_id, call_status });
     });
+    socket.on(SocketVideoCallEvent.onOpenConnect, (args: TSocketEventCall) => {
+      setInfoCall(args);
+      console.log("ok nè", args);
+      setTimeout(() => {
+        videoCallChannel.postMessage({
+          type: SocketVideoCallEvent.onOpenConnect,
+          payload: args,
+        });
+      }, 2500);
+    });
   }, [socket]);
   const emitCall = useCallback(
     (args: TSocketEventCall) => {
@@ -292,7 +303,7 @@ const SocketCallVideoProvider = ({
   const emitAccpetCall = useCallback(
     (args: TSocketEventCall) => {
       if (!socket) return;
-      setInfoCall(args);
+
       SocketCallVideo.emitAccpetCall(socket, args);
       const { caller_id, onwer_id, receiver_id, call_id } = args;
       const url = `/call?caller_id=${caller_id}&receiver_id=${receiver_id}&onwer_id=${receiver_id}&daua=true`;

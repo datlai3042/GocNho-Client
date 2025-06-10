@@ -58,7 +58,7 @@ const VideoCallRemote = () => {
   const { instanceHook } = useContext(CallContext);
   const videoRemoteRef = useRef<HTMLVideoElement | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-
+console.log({instanceHook})
   // Cập nhật remoteStream mỗi khi instanceHook.hasStream thay đổi
   useEffect(() => {
     if (instanceHook?.hasStream && instanceHook.streamRemote?.current) {

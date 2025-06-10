@@ -61,6 +61,8 @@ const useCall = (props: TUseCall) => {
                     // Khi nhận stream từ phía bên kia
                     call.on('stream', (remoteStream) => {
                         console.log("📥 Nhận stream từ peer:", peerId, remoteStream);
+                         console.log("Tracks:", remoteStream.getTracks());
+
                         streamRemote.current = remoteStream;
                         setHasStream(true);
                     });
