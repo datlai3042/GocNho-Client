@@ -9,7 +9,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from "react";
 import { useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
@@ -32,14 +32,18 @@ export type TSocketCallVideoInfo = {
   call_id: string;
 } & TSocketEventCall;
 
-enum SocketVideoCallEvent {
+export enum SocketVideoCallEvent {
   emitInitVideoCall = "emitInitVideoCall",
+  emitRequestCall = "emitRequestCall",
+  onWaitingConnect = "onWaitingConnect",
+
   emitRejectCall = "emitRejectCall",
   emitAccpetCall = "emitAccpetCall",
 
+  onAcceptCall = "onAcceptCall",
   onRejectCall = "onRejectCall",
   onPendingCall = "onPendingCall",
-  onAcceptCall = "onAcceptCall",
+  onConnectStream = "onConnectStream",
 }
 
 export const channelName = "call_video";
@@ -150,6 +154,22 @@ class SocketCallVideo {
       }
     );
   }
+
+  static async onWaitingConnect(
+    socket: Socket,
+
+    callback?: (args: TSocketCallVideoInfo) => void
+  ) {
+    socket.on(
+      SocketVideoCallEvent.onWaitingConnect,
+      (args: TSocketCallVideoInfo) => {
+        console.log({ args });
+        if (callback) {
+          callback(args);
+        }
+      }
+    );
+  }
   static clearEvent(socket: Socket) {
     socket.off(
       SocketVideoCallEvent.emitInitVideoCall,
@@ -166,8 +186,7 @@ type TSocketCallVideoEvent = {
   handleEventCall: {
     createCall: (userEvent: UserType) => void;
     emitAccpetCall: (args: TSocketEventCall) => void;
-        emitRejectCall: (args: TSocketEventCall) => void;
-
+    emitRejectCall: (args: TSocketEventCall) => void;
   };
 };
 
@@ -178,8 +197,7 @@ export const SocketCallVideoContext = createContext<
   handleEventCall: {
     createCall: (userEvent) => {},
     emitAccpetCall: (args: TSocketEventCall) => {},
-        emitRejectCall: (args: TSocketEventCall) => {},
-
+    emitRejectCall: (args: TSocketEventCall) => {},
   },
   infoUserCall: undefined,
   infoCall: undefined,
@@ -199,8 +217,6 @@ const SocketCallVideoProvider = ({
     undefined
   );
   const createCall = (userEvent: UserType) => {
-    console.log({userEvent, })
-
     const url = `/call?caller_id=${user?._id}&receiver_id=${userEvent?._id}&onwer_id=${user?._id}`;
 
     const windowFeatures =
@@ -209,17 +225,15 @@ const SocketCallVideoProvider = ({
     window.open(url, "_blank", windowFeatures);
   };
 
-
-
   useEffect(() => {
     const handler = (
       event: MessageEvent<ChannelCommonData<TSocketEventCall>>
     ) => {
       const { data } = event;
-      console.log({data})
+      console.log({ data });
       if (data?.type === "CREATE_CALL_OF_SOCKET") {
         const { caller_id, onwer_id, receiver_id } = data?.payload;
-        console.log({message: 'CREATE_CALL_OF_SOCKET'})
+        console.log({ message: "CREATE_CALL_OF_SOCKET" });
         emitCall({ caller_id, receiver_id, onwer_id });
       }
     };
@@ -231,24 +245,37 @@ const SocketCallVideoProvider = ({
     };
   }, [channelName, socket]);
   useEffect(() => {
-    if (!socket ) return;
+    if (!socket) return;
     socket.on(
       SocketVideoCallEvent.emitRejectCall,
       (args: TSocketCallVideoInfo) => {
         SocketCallVideo.onRejectCall(socket, args);
         const { caller_id, onwer_id, receiver_id, call_id, call_status } = args;
+        console.log("emitRejectCall received", args);
 
         setInfoCall({ caller_id, onwer_id, receiver_id, call_id, call_status });
       }
     );
     SocketCallVideo.onAcceptCall(socket, (args: TSocketEventCall) => {
-      if(user?._id !== args.receiver_id) {
-
-        videoCallChannel.postMessage({ type: "ON_ACCEPT_CALL" });
+      console.log("onAcceptCall received", args);
+      if (user?._id !== args.receiver_id) {
+        videoCallChannel.postMessage({ type: "ON_ACCEPT_CALL", payload: args });
       }
     });
 
+    SocketCallVideo.onWaitingConnect(socket, (args: TSocketEventCall) => {
+      console.log("onWaitingConnect received", args);
+
+      const { caller_id, onwer_id, receiver_id, call_id, call_status } = args;
+      setInfoCall({ caller_id, onwer_id, receiver_id, call_id, call_status });
+      videoCallChannel.postMessage({
+        type: SocketVideoCallEvent.onWaitingConnect,
+        payload: args,
+      });
+    });
     SocketCallVideo.isRequestPending(socket, (args: TSocketCallVideoInfo) => {
+      console.log("isRequestPending received", args);
+
       const { caller_id, onwer_id, receiver_id, call_id, call_status } = args;
       setInfoUserCall(args.infoUserCall);
       setInfoCall({ caller_id, onwer_id, receiver_id, call_id, call_status });
@@ -259,7 +286,6 @@ const SocketCallVideoProvider = ({
       if (!socket) return;
       SocketCallVideo?.emitInitVideoCall(socket, args);
       setInfoCall(args);
-      
     },
     [socket]
   );
@@ -267,7 +293,7 @@ const SocketCallVideoProvider = ({
     (args: TSocketEventCall) => {
       if (!socket) return;
       setInfoCall(args);
-      SocketCallVideo.emitAccpetCall(socket,args)
+      SocketCallVideo.emitAccpetCall(socket, args);
       const { caller_id, onwer_id, receiver_id, call_id } = args;
       const url = `/call?caller_id=${caller_id}&receiver_id=${receiver_id}&onwer_id=${receiver_id}&daua=true`;
       const windowFeatures =
@@ -277,7 +303,7 @@ const SocketCallVideoProvider = ({
     },
     [socket]
   );
-    const emitRejectCall = useCallback(
+  const emitRejectCall = useCallback(
     (args: TSocketEventCall) => {
       if (!socket) return;
       SocketCallVideo?.emitRejectCall(socket, args, () => {
@@ -296,7 +322,7 @@ const SocketCallVideoProvider = ({
     return {
       createCall,
       emitAccpetCall,
-      emitRejectCall
+      emitRejectCall,
     };
   }, [socket, user]);
 
@@ -309,7 +335,8 @@ const SocketCallVideoProvider = ({
       }}
     >
       {children}
-      {infoCall?.call_status === "CREATE" && <CallVideoNotificationUI />}
+      {infoCall?.receiver_id === user?._id &&
+        infoCall?.call_status === "CREATE" && <CallVideoNotificationUI />}
     </SocketCallVideoContext.Provider>
   );
 };

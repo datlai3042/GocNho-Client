@@ -1,12 +1,19 @@
 "use client";
 
 import { useParams, useSearchParams } from "next/navigation";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import CallProvier from "./providers";
 import LayoutVideoCall from "./layouts/LayoutVideoCall";
 import {
   channelName,
   SocketCallVideoProvider,
+  SocketVideoCallEvent,
   TSocketEventCall,
   videoCallChannel,
 } from "./providers/socketCallVideo.provider";
@@ -28,6 +35,20 @@ const isOwnerCall = (
   console.log({ userCurrent, compareId });
   return !userCurrent ? false : userCurrent?._id === compareId;
 };
+
+type TCallContext = {
+  instanceHook: ReturnType<typeof useCall> | undefined;
+  infoCall?: TSocketEventCall | undefined;
+  setInfoCall?: React.Dispatch<
+    React.SetStateAction<TSocketEventCall | undefined>
+  >;
+};
+
+export const CallContext = createContext<TCallContext>({
+  instanceHook: undefined,
+  infoCall: undefined,
+  setInfoCall: () => {},
+});
 const tabName = "call";
 const CallView = () => {
   const [createCallInstance, setCreateCallInstance] = useState(false);
@@ -43,14 +64,17 @@ const CallView = () => {
   const streamRef = useRef<MediaStream | undefined>(undefined);
   const isOwner = useMemo(() => {
     return isOwnerCall(user, caller_id || "");
-  }, [getMe.isPending, getMe])
+  }, [getMe.isPending, getMe]);
   const callHook = useCall({
     triggerCreate: !!user && createCallInstance,
     peerCallId: isOwner ? caller_id || "" : receiver_id || "",
     peerReceiverId: isOwner ? receiver_id || "" : caller_id || "",
     stream: streamRef,
   });
-  console.log({callHook})
+  const [infoCall, setInfoCall] = useState<TSocketEventCall | undefined>(
+    undefined
+  );
+  console.log({ callHook });
   useEffect(() => {
     console.log({ caller_id, onwer_id, receiver_id, isOwner });
     if (!caller_id || !onwer_id || !receiver_id) return;
@@ -76,13 +100,22 @@ const CallView = () => {
     }
   }, [createCallInstance, isOwner]);
   useEffect(() => {
-    const handler = (event: MessageEvent<ChannelCommonData>) => {
+    const handler = (
+      event: MessageEvent<ChannelCommonData<TSocketEventCall>>
+    ) => {
       console.log("🎧 Nhận tin:", event.data);
       console.log({ event });
       const { data, type } = event;
 
       if (data?.type === "ON_ACCEPT_CALL") {
         setCreateCallInstance(true);
+        setInfoCall(data?.payload);
+        console.log({data})
+      }
+
+      if (data?.type === SocketVideoCallEvent.onWaitingConnect) {
+        console.log({data})
+        setInfoCall(data?.payload);
       }
     };
     videoCallChannel.addEventListener("message", handler);
@@ -93,7 +126,6 @@ const CallView = () => {
   }, [channelName, channelActive, user]);
 
   useEffect(() => {
-    console.log({ getMe });
     if (getMe.isSuccess && !getMe.isPending) {
       setTrigger(true);
     }
@@ -102,9 +134,9 @@ const CallView = () => {
   if (!trigger) return <>...loading</>;
 
   return (
-    <CallProvier instanceHook={callHook}>
+    <CallContext.Provider value={{ instanceHook: callHook, infoCall }}>
       <LayoutVideoCall />
-    </CallProvier>
+    </CallContext.Provider>
   );
 };
 

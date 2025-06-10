@@ -6,14 +6,14 @@ import {
 } from "../providers/socketCallVideo.provider";
 import { CallContext } from "../providers";
 
-const ButtonRejectCall = () => {
+const ButtonEndCall = () => {
   const { handleEventCall, infoCall } = useContext(SocketCallVideoContext);
   const { instanceHook } = useContext(CallContext);
 
   const onRejectCall = () => {
-    handleEventCall.emitRejectCall(infoCall!);
+    // handleEventCall.emitEndCall(infoCall!);
     videoCallChannel.postMessage({
-      type: "REJECT_CALL_OF_SOCKET",
+      type: "END_CALL_OF_SOCKET",
       payload: {
         call_id: infoCall?.call_id,
         caller_id: infoCall?.caller_id,
@@ -22,9 +22,6 @@ const ButtonRejectCall = () => {
     });
     instanceHook?.destroy();
   };
-
-  
-
   return (
     <button
       onClick={onRejectCall}
@@ -35,4 +32,4 @@ const ButtonRejectCall = () => {
   );
 };
 
-export default ButtonRejectCall;
+export default ButtonEndCall;

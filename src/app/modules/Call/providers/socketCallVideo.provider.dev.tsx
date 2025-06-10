@@ -1,29 +1,25 @@
 "use client";
 import Portal from "@/app/core/Components/Store/Portal";
+import { RootState } from "@/lib/Redux/store";
 import { motion } from "motion/react";
 import Image from "next/image";
 import React, {
   createContext,
-  SetStateAction,
   useCallback,
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
+import { useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
+import { ChannelCommonData } from "..";
 import { SocketContext } from "../../Socket/providers";
 import { UserType } from "../../User/index.type";
 import ButtonAcceptCall from "../components/ButtonAcceptCall";
 import ButtonRejectCall from "../components/ButtonRejectCall";
-import useCall from "../hooks/useCall";
 import { TCallSchema } from "../types/call.type";
-import { useSearchParams } from "next/navigation";
-import { channel } from "diagnostics_channel";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/Redux/store";
-import { ChannelCommonData } from "..";
+import e from "express";
 export type TSocketEventCall = {
   caller_id: string;
   receiver_id: string;
@@ -41,7 +37,9 @@ enum SocketVideoCallEvent {
   emitInitVideoCall = "emitInitVideoCall",
   emitRejectCall = "emitRejectCall",
   emitAccpetCall = "emitAccpetCall",
+  emitEndCall = "emitEndCall",
 
+  onEndCall = "onEndCall",
   onRejectCall = "onRejectCall",
   onPendingCall = "onPendingCall",
   onAcceptCall = "onAcceptCall",
@@ -138,9 +136,12 @@ class SocketCallVideo {
   static async emitAccpetCall(
     socket: Socket,
     args: TSocketEventCall,
-    callback?: () => void
+    callback?: (args: TSocketEventCall) => void
   ) {
     socket.emit(SocketVideoCallEvent.onAcceptCall, args);
+    if(callback) {
+      callback(args);
+    }
   }
   static async onAcceptCall(
     socket: Socket,
@@ -149,13 +150,35 @@ class SocketCallVideo {
     socket.on(
       SocketVideoCallEvent.onAcceptCall,
       (args: TSocketCallVideoInfo) => {
-        console.log("Có tín hiệu");
         if (callback) {
           callback(args);
         }
       }
     );
   }
+
+  //Kết thúc cuộc gọi
+  static async emitEndCall(
+    socket: Socket,
+    args: TSocketEventCall,
+    callback?: (args: SocketVideoCallEvent) => void
+  ) {
+    socket.emit(SocketVideoCallEvent.emitEndCall, args);
+    SocketCallVideo.clearEvent(socket);
+  }
+
+  static async onEndCall(
+    socket: Socket,
+    callback?: (args: TSocketEventCall) => void
+  ) {
+    socket.on(SocketVideoCallEvent.onEndCall, (args: TSocketEventCall) => {
+      if (callback) {
+        callback(args);
+      }
+      SocketCallVideo.clearEvent(socket);
+    });
+  }
+
   static clearEvent(socket: Socket) {
     socket.off(
       SocketVideoCallEvent.emitInitVideoCall,
@@ -165,24 +188,42 @@ class SocketCallVideo {
       SocketVideoCallEvent.onPendingCall,
       SocketCallVideo.isRequestPending
     );
+
+    socket.off(
+      SocketVideoCallEvent.emitRejectCall,
+      SocketCallVideo.emitRejectCall
+    );
+    socket.off(SocketVideoCallEvent.onRejectCall, SocketCallVideo.onRejectCall);
+    socket.off(SocketVideoCallEvent.onAcceptCall, SocketCallVideo.onAcceptCall);
+    socket.off(SocketVideoCallEvent.emitEndCall, SocketCallVideo.emitEndCall);
+
+    socket.off(SocketVideoCallEvent.onEndCall, SocketCallVideo.onEndCall);
   }
 }
 
 type TSocketCallVideoEvent = {
   handleEventCall: {
     createCall: (userEvent: UserType) => void;
+    emitAccpetCall: (args: TSocketEventCall) => void;
+    emitRejectCall: (args: TSocketEventCall) => void;
+    emitEndCall: (args: TSocketEventCall) => void;
   };
 };
 
 export const SocketCallVideoContext = createContext<
-  TSocketCallVideoEvent & TSocketCallVideo
+  TSocketCallVideoEvent &
+    TSocketCallVideo & { infoCall: TSocketEventCall | undefined }
 >({
   handleEventCall: {
     createCall: (userEvent) => {},
+    emitAccpetCall: (args: TSocketEventCall) => {},
+    emitRejectCall: (args: TSocketEventCall) => {},
+    emitEndCall: (args: TSocketEventCall) => {},
   },
   infoUserCall: undefined,
+  infoCall: undefined,
 });
-
+const tabName = "wrapper";
 const SocketCallVideoProvider = ({
   children,
 }: {
@@ -197,8 +238,10 @@ const SocketCallVideoProvider = ({
     undefined
   );
   const createCall = (userEvent: UserType) => {
+    console.log({ userEvent });
+
     const url = `/call?caller_id=${user?._id}&receiver_id=${userEvent?._id}&onwer_id=${user?._id}`;
-    videoCallChannel.postMessage({ type: "CREATE_CALL" });
+
     const windowFeatures =
       "toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no," +
       `width=${screen.width},height=${screen.height},top=0,left=0`;
@@ -206,37 +249,64 @@ const SocketCallVideoProvider = ({
   };
 
   useEffect(() => {
-    videoCallChannel.onmessage = (
+    const handler = (
       event: MessageEvent<ChannelCommonData<TSocketEventCall>>
     ) => {
-      const { data, type } = event;
-      if (data?.type === "CREAL_CALL_OF_SOCKET") {
+      const { data } = event;
+      if (data?.type === "CREATE_CALL_OF_SOCKET") {
         const { caller_id, onwer_id, receiver_id } = data?.payload;
+        console.log({ message: "CREATE_CALL_OF_SOCKET" });
         emitCall({ caller_id, receiver_id, onwer_id });
       }
+
+      if (data?.type === "END_CALL_OF_SOCKET") {
+        const { caller_id, onwer_id, receiver_id, call_id } = data?.payload;
+        emitEndCall({ caller_id, onwer_id, receiver_id, call_id });
+      }
+      
     };
-  }, [channelName]);
+
+    videoCallChannel.addEventListener("message", handler);
+
+    return () => {
+      videoCallChannel.removeEventListener("message", handler);
+    };
+  }, [channelName, socket]);
   useEffect(() => {
     if (!socket) return;
+
+    //Lắng nghe user remote actions
+
+    /*Từ chối cuộc gọi */
     socket.on(
       SocketVideoCallEvent.emitRejectCall,
       (args: TSocketCallVideoInfo) => {
         SocketCallVideo.onRejectCall(socket, args);
         const { caller_id, onwer_id, receiver_id, call_id, call_status } = args;
-
         setInfoCall({ caller_id, onwer_id, receiver_id, call_id, call_status });
       }
     );
+
+    /*Chấp nhận cuộc gọi */
     SocketCallVideo.onAcceptCall(socket, (args: TSocketEventCall) => {
-        videoCallChannel.postMessage({type: 'ON_ACCEPT_CALL'})
+      if (user?._id !== args.receiver_id) {
+        videoCallChannel.postMessage({ type: "ON_ACCEPT_CALL", payload: args });
+      }
     });
 
+    /*Đợi chấp thuận cuộc gọi */
     SocketCallVideo.isRequestPending(socket, (args: TSocketCallVideoInfo) => {
       const { caller_id, onwer_id, receiver_id, call_id, call_status } = args;
       setInfoUserCall(args.infoUserCall);
       setInfoCall({ caller_id, onwer_id, receiver_id, call_id, call_status });
     });
+
+    /*Kết thúc cuộc gọi */
+    SocketCallVideo.onEndCall(socket);
   }, [socket]);
+
+  /*Gửi yêu cầu cuộc gọi */
+
   const emitCall = useCallback(
     (args: TSocketEventCall) => {
       if (!socket) return;
@@ -246,17 +316,73 @@ const SocketCallVideoProvider = ({
     [socket]
   );
 
+  /*Gửi yêu cầu đã chấp thuận cuộc gọi */
+  const emitAccpetCall = useCallback(
+    (args: TSocketEventCall) => {
+      if (!socket) return;
+      setInfoCall(args);
+      SocketCallVideo.emitAccpetCall(socket, args, (args) => {
+        console.log({postNe: args})
+        videoCallChannel.postMessage({  type: "ON_ACCEPT_CALL", payload: args });       
+
+      });
+      const { caller_id, onwer_id, receiver_id, call_id } = args;
+      const url = `/call?caller_id=${caller_id}&receiver_id=${receiver_id}&onwer_id=${receiver_id}&daua=true`;
+      const windowFeatures =
+        "toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no," +
+        `width=${screen.width},height=${screen.height},top=0,left=0`;
+      window.open(url, "_blank", windowFeatures);
+    },
+    [socket]
+  );
+
+  /*Gửi yêu cầu từ chối cuộc gọi */
+  const emitRejectCall = useCallback(
+    (args: TSocketEventCall) => {
+      if (!socket) return;
+      SocketCallVideo?.emitRejectCall(socket, args, () => {
+        setInfoCall((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            call_status: "REJECT",
+          };
+        });
+      });
+    },
+    [socket]
+  );
+  const emitEndCall = useCallback(
+    (args: TSocketEventCall) => {
+      if (!socket) return;
+      SocketCallVideo?.emitEndCall(socket, args, () => {
+        setInfoCall((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            call_status: "COMPLETE",
+          };
+        });
+      });
+    },
+    [socket]
+  );
+
   const handleEventCall = useMemo(() => {
     return {
       createCall,
+      emitAccpetCall,
+      emitRejectCall,
+      emitEndCall,
     };
-  }, [socket]);
+  }, [socket, user]);
 
   return (
     <SocketCallVideoContext.Provider
       value={{
         handleEventCall,
         infoUserCall,
+        infoCall,
       }}
     >
       {children}

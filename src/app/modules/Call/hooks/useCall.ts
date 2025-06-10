@@ -34,6 +34,7 @@ const useCall = (props: TUseCall) => {
             const peer = createPeer(peerCallId);
             peerRef.current = peer
             const handleOpen = (id: string) => {
+                console.log('Peer open:', id)
                 setPeerId(peerCallId)
                 setPeerReady(true)
             }
@@ -53,7 +54,6 @@ const useCall = (props: TUseCall) => {
                         console.log("✅ Lấy được stream local:", streamAPI);
                         setConnectStream(true);
                     }
-console.log({stream})
                     // Trả lời cuộc gọi với stream local
                     console.log("📞 Trả lời cuộc gọi với stream local...");
                     call.answer(stream!.current);
@@ -100,7 +100,6 @@ console.log({stream})
         if (!peerReceiverId || !peerRef.current || !peerRef.current) return
 
         try {
-            console.log('cai gi vay')
 
             const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             stream!.current = localStream; // ✅ Gán vào ref được truyền từ props
@@ -110,14 +109,15 @@ console.log({stream})
 
 
             const call = peerRef.current!.call(peerReceiverId, localStream)
-            console.log({ call })
             if (!call) {
                 console.error('peer.call failed – remote peer not found')
                 return
             }
+            console.log('Peer received call:', call)
             call.on('stream', (remoteStream) => {
                 streamRemote.current = remoteStream
-                console.log('co stream', remoteStream)
+                console.log('Received remote stream:', remoteStream);
+
                 setHasStream(true)
             })
 
@@ -126,7 +126,7 @@ console.log({stream})
         } catch (err) {
             console.error('Error getting media or calling peer:', err)
         }
-    }, [connectStream, pendingAccpet])
+    }, [pendingAccpet])
 
     const getValueHook = () => {
         return { onCall, streamRemote, stream, hasStream, setPeerRemoteId, setPeerId, peerId, connectStream, peerRemoteId, peerReady, destroy }
@@ -142,7 +142,9 @@ console.log({stream})
     useEffect(() => {
         console.log({ pendingAccpet })
         if (pendingAccpet) {
-            onCall()
+            setTimeout(() => {
+                onCall()
+            }, 5000)
 
         }
     }, [pendingAccpet])
