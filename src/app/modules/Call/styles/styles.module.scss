@@ -54,3 +54,14 @@
     align-items: center;
   }
 }
+
+@media screen and (max-width: 1023px) {
+   .videoCallRemote__container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center !important;
+    background-color: #242323;
+  }
+}
