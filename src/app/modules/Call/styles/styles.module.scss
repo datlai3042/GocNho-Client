@@ -1,13 +1,16 @@
 #call__container {
-  background-color: #242323;
+  // background-color: #242323;
+  background-color: #fff;
   position: relative;
   width: 100%;
   height: 100vh;
+  padding: 4rem 4rem;
 
   video {
     max-height: 100%;
     object-fit: contain;
     border-radius: 0.8rem;
+
   }
   .videoCallRemote__container {
     width: 100%;
@@ -16,23 +19,31 @@
     justify-content: center;
     align-items: start;
     background-color: #242323;
+    border-radius: 0.8rem;
+
   }
   .videoCallRemote__container video {
-    width: 70vw !important;
-    margin-top: 4rem;
+    width: 100% !important;
     object-fit: cover !important;
+    height: 100%;
   }
   .videoCallMe__container {
     position: absolute;
-    top: 4.6rem;
-    right: 2rem;
-    width: 18rem;
-    height: 14rem;
+    top: 8.6rem;
+    right: 6rem;
+    width: 20rem;
+    height: 16rem;
+
+    video {
+      object-fit: cover;
+      height: 100%;
+
+    }
   }
 
   .videoCallController__container {
     position: absolute;
-    bottom: 2rem;
+    bottom: 6rem;
     left: 50%;
     height: 6rem;
     transform: translate3d(-50%, 0, 0);

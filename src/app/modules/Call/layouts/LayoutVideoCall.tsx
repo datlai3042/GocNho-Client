@@ -7,24 +7,32 @@ import ButtonEndCall from "../components/ButtonEndCall";
 import styles from "../styles/styles.module.scss";
 
 const LayoutVideoCall = () => {
-
   const { infoCall } = useContext(CallContext);
   return (
-    <div id={`${styles.call__container}`}>
-      {infoCall?.call_status === "CREATE" && (
-        <>
-          <LoadingOnWaitingConnect />
-        </>
+    <div id={`${styles.call__container}`} className="flex flex-col">
+      {infoCall?.call_status !== "CREATE" && (
+        <div className="h-[3rem] min-h-[3rem] bg-[#fff] flex justify-between">
+            {/* {JSON.stringify(infoCall)} */}
+
+        </div>
       )}
-      <VideoCallController />
-      <VideoCallMe />
-      {infoCall?.call_status === "REJECT" && <span>Không bắt máy</span>}
-      {infoCall?.call_status === "ACCPET" && (
-        <>
-          <VideoCallRemote />
-        </>
-      )}
-      {infoCall?.call_status === "COMPLETE" && <VideoCallEndUI />}
+      <div style={{height: 'calc(100vh - 10rem)'}} className="">
+        {infoCall?.call_status === "CREATE" && (
+          <span>
+            <LoadingOnWaitingConnect />
+          </span>
+        )}
+        {infoCall?.call_status !== "COMPLETE" && <VideoCallController />}
+
+        <VideoCallMe />
+        {infoCall?.call_status === "REJECT" && <span>Không bắt máy</span>}
+        {infoCall?.call_status === "ACCPET" && (
+          <>
+            <VideoCallRemote />
+          </>
+        )}
+        {infoCall?.call_status === "COMPLETE" && <VideoCallEndUI />}
+      </div>
     </div>
   );
 };

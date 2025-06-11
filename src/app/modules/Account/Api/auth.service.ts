@@ -107,7 +107,6 @@ class AuthService {
                   expireCookie,
             };
             const urlRequest = process.env.NEXT_PUBLIC_MODE === "DEV" ? "http://localhost:5173" : process.env.NEXT_PUBLIC_CLIENT_URL;
-            console.log({urlRequest})
 
             const syncToken = await fetch(`${urlRequest}/v1/api/auth/set-token`, {
                   body: JSON.stringify(bodySyncTokenAPI),

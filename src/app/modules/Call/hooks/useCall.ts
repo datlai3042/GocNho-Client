@@ -185,7 +185,7 @@ const useCall = (props: TUseCall) => {
         if (pendingAccpet) {
             setTimeout(() => {
                 onCall()
-            }, 5000)
+            }, 3000)
 
         }
     }, [pendingAccpet])

@@ -202,14 +202,14 @@ class SocketCallVideo {
     );
   }
   static clearEvent(socket: Socket) {
-    socket.off(
-      SocketVideoCallEvent.emitInitVideoCall,
-      SocketCallVideo.emitInitVideoCall
-    );
-    socket.off(
-      SocketVideoCallEvent.onPendingCall,
-      SocketCallVideo.isRequestPending
-    );
+    // socket.off(
+    //   SocketVideoCallEvent.emitInitVideoCall,
+    //   SocketCallVideo.emitInitVideoCall
+    // );
+    // socket.off(
+    //   SocketVideoCallEvent.onPendingCall,
+    //   SocketCallVideo.isRequestPending
+    // );
   }
 }
 

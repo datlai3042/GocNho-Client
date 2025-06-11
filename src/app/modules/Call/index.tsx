@@ -140,7 +140,7 @@ const CallView = () => {
     const eventLeaving = (event: BeforeUnloadEvent) => {
       callHook?.destroy();
       if (infoCall?.call_status !== "COMPLETE") {
-        videoCallChannel.postMessage({ type: "ON_CLOSE_WINDOW_CALL" });
+        videoCallChannel.postMessage({ type: "ON_CLOSE_WINDOW_CALL", payload: {...infoCall, call_status: 'COMLETE'} });
       }
     };
     window.addEventListener("beforeunload", eventLeaving);

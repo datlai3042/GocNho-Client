@@ -26,7 +26,6 @@ type TProps = {
 };
 
 const LoginForm = (props: TProps) => {
-  console.log('mount')
   const { onClose } = props;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -51,7 +50,6 @@ const LoginForm = (props: TProps) => {
   };
 
   useEffect(() => {
-    console.log({loginMutation})
     if (loginMutation.isSuccess) {
       const { user } = loginMutation?.data.metadata;
       dispatch(onFetchUser({ user }));
