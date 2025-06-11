@@ -10,6 +10,12 @@ const ButtonEndCall = () => {
   const { instanceHook, infoCall } = useContext(CallContext);
 
   const onRejectCall = () => {
+    instanceHook?.destroy();
+
+    if(infoCall?.call_status === 'COMPLETE') {
+        window.close()
+        return
+    }
     videoCallChannel.postMessage({
       type: "END_CALL_OF_SOCKET",
       payload: {
@@ -18,7 +24,6 @@ const ButtonEndCall = () => {
         receiver_id: infoCall?.receiver_id,
       },
     });
-    instanceHook?.destroy();
   };
   return (
     <button
