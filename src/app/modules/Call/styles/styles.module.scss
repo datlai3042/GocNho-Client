@@ -34,7 +34,7 @@
     height: 16rem;
 
     video {
-      object-fit: cover;
+      object-fit: contain;
       height: 100%;
 
     }
@@ -58,7 +58,6 @@
   }
 
   .videoCallEndUI__container {
-    width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
