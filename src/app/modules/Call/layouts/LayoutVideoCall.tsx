@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useContext, useEffect, useRef, useState } from "react";
-import styles from "../styles/styles.module.scss";
-import { SocketCallVideoContext } from "../providers/socketCallVideo.provider";
-import ButtonRejectCall from "../components/ButtonRejectCall";
-import ButtonAcceptCall from "../components/ButtonAcceptCall";
+import { useContext, useEffect, useRef, useState } from "react";
 import { CallContext } from "..";
-import ButtonEndCall from "../components/ButtonEndCall";
 import ButtonDisableMicro from "../components/ButtonDisableMicro";
+import ButtonEndCall from "../components/ButtonEndCall";
+import styles from "../styles/styles.module.scss";
 
 const LayoutVideoCall = () => {
 
@@ -20,8 +17,8 @@ const LayoutVideoCall = () => {
         </>
       )}
       <VideoCallController />
-      {infoCall?.call_status === "REJECT" && <span>Không bắt máy</span>}
       <VideoCallMe />
+      {infoCall?.call_status === "REJECT" && <span>Không bắt máy</span>}
       {infoCall?.call_status === "ACCPET" && (
         <>
           <VideoCallRemote />

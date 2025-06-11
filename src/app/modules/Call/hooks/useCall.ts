@@ -25,12 +25,49 @@ const useCall = (props: TUseCall) => {
     const peerRef = useRef<Peer | null>(null)
     const [pendingAccpet, setPendingAccpet] = useState(false)
 
+    const [videoVersion, setVideoVersion] = useState(0)
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>()
+
     const onAcceptCallTrigger = () => {
         setPendingAccpet(true)
     }
 
+    const controlAudioMe = (audioValue: boolean) => {
+        if (!stream?.current) return
+        if (stream) {
+            stream.current.getAudioTracks().forEach(track => {
+                track.enabled = audioValue;
+            });
+        }
+    }
 
 
+    const controlAudioRemote = (audioValue: boolean) => {
+        if (!streamRemote?.current) return
+        if (streamRemote) {
+            streamRemote.current.getAudioTracks().forEach(track => {
+                track.enabled = audioValue;
+            });
+        }
+    }
+
+    const videoEvent = {
+        audio: {
+            controlAudioMe, controlAudioRemote
+        }
+    }
+
+
+    // const switchCamera = () => {
+    //     setVideoVersion(prev => prev + 1)
+    //     streamRef.current?.getTracks().forEach(t => t.stop());
+
+    //     // get new stream
+    //     const newStream = await navigator.mediaDevices.getUserMedia({ video: newFacingMode, audio: true });
+
+    //     streamRef.current = newStream;
+    //     setStream(newStream); // Force re-render
+    // }
 
     useEffect(() => {
         try {
@@ -136,10 +173,6 @@ const useCall = (props: TUseCall) => {
         }
     }, [pendingAccpet])
 
-    const getValueHook = () => {
-        return { onCall, streamRemote, stream, hasStream, setPeerRemoteId, setPeerId, peerId, connectStream, peerRemoteId, peerReady, destroy }
-
-    }
 
 
     useEffect(() => {
@@ -158,12 +191,16 @@ const useCall = (props: TUseCall) => {
     }, [pendingAccpet])
 
     const destroy = () => {
-        peerRef.current?.destroy()
+        peerRef.current?.off('open'),
+            peerRef.current?.off('call'),
+            peerRef.current?.off('connection'),
+
+            peerRef.current?.destroy()
         peerRef.current = null
 
     }
 
-    return { onAcceptCallTrigger, onCall, getValueHook, streamRemote, stream, hasStream, setPeerRemoteId, setPeerId, peerId, connectStream, peerRemoteId, peerReady, destroy }
+    return { onAcceptCallTrigger, onCall, streamRemote, stream, hasStream, peerId, connectStream, peerRemoteId, peerReady, destroy, videoEvent }
 }
 
 export default useCall
