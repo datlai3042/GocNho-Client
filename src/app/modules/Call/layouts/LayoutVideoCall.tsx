@@ -9,14 +9,22 @@ import styles from "../styles/styles.module.scss";
 const LayoutVideoCall = () => {
   const { infoCall } = useContext(CallContext);
   return (
-    <div id={`${styles.call__container}`} className="flex flex-col">
-      {infoCall?.call_status !== "CREATE" && (
-        <div className="h-[3rem] min-h-[3rem] bg-[#fff] flex justify-between">
-            {/* {JSON.stringify(infoCall)} */}
-
-        </div>
-      )}
-      <div style={{height: 'calc(100vh - 10rem)'}} className="">
+    <div
+      id={`${styles.call__container}`}
+      className="flex flex-col"
+      style={{
+        backgroundColor:
+          infoCall?.call_status === "ACCPET" ||
+          infoCall?.call_status === "COMPLETE"
+            ? "#fff"
+            : "",
+      }}
+    >
+      {infoCall?.call_status !== "CREATE" &&
+        infoCall?.call_status !== "COMPLETE" && (
+          <div className="h-[3rem] min-h-[3rem] bg-[#fff] flex justify-between"></div>
+        )}
+      <div style={{ height: "calc(100vh - 10rem)" }} className="">
         {infoCall?.call_status === "CREATE" && (
           <span>
             <LoadingOnWaitingConnect />
