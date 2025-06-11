@@ -14,8 +14,7 @@ const LayoutVideoCall = () => {
       className="flex flex-col"
       style={{
         backgroundColor:
-          infoCall?.call_status === "ACCPET" ||
-          infoCall?.call_status === "COMPLETE"
+          infoCall?.call_status === "ACCPET" 
             ? "#fff"
             : "",
       }}
