@@ -1,5 +1,6 @@
 "use client";
 import Portal from "@/app/core/Components/Store/Portal";
+import Image from "next/image";
 import React, { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -17,22 +18,34 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
     <Portal>
       <div
         style={{ lineHeight: 1.6 }}
-        className="relative flex z-[500] w-full top-0 xl:top-0 left-0 min-h-screen  xl:pt-0    bg-color-section-theme  "
+        className="relative flex z-[500] bg-[#1a1a68] w-full top-0 xl:top-0 left-0 min-h-screen  xl:p-[4rem_2rem]   "
       >
-        <div className="min-w-[28vw] m-auto  overflow-auto flex-grow-[1] md:flex-grow-0 flex flex-col   px-[20px] py-[1rem]">
-          {/* <header className="w-full flex   justify-end items-center ">
-                                    <ButtonDarkMode />
-                              </header> */}
+        <div
+          style={{ boxShadow: "1px 1px 5px 5px #d7d7d747" }}
+          className="min-w-[27vw] bg-[#fff]  rounded-[3rem] m-[auto]  overflow-auto flex-grow-[1] md:flex-grow-0 flex flex-col   p-[2.8rem_3.2rem]"
+        >
+          
           <div className="flex-1 flex   w-full text-text-theme   auth-scroll">
             {children}
           </div>
           {/* <AuthorDat /> */}
         </div>
-        {/* <div className="wrapper hidden bg-[var(--color-main)]  flex-1 relative  overflow-auto min-h-full h-screen  gap-[1rem]  md:flex justify-end ">
-                              <div className="min-h-full w-full">
-                                    <EditFormPage params={{ id: "profile" }} />
-                              </div>
-                        </div> */}
+        
+        <Image
+          src={"/assets/images/themes/authentication/tree.svg"}
+          width={100}
+          height={100}
+          alt="Hình authentication 1"
+          className="absolute bottom-[2rem] left-[2vw] w-[30vw] object-cover hidden lg:inline-block"
+        />
+      
+        <Image
+          src={"/assets/images/themes/authentication/pair_programmer.svg"}
+          width={100}
+          height={100}
+          alt="Hình authentication 3"
+          className="absolute bottom-[2rem] right-[2vw] w-[30vw] object-cover hidden lg:inline-block"
+        />
       </div>
     </Portal>
   );

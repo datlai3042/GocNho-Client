@@ -56,7 +56,7 @@ type TSocketCallVideo = {
 
 const CallVideoNotificationUI = () => {
   const { infoUserCall } = useContext(SocketCallVideoContext);
-
+  console.log({ infoUserCall });
   return (
     <Portal>
       <>
@@ -68,29 +68,27 @@ const CallVideoNotificationUI = () => {
           className="fixed bottom-[2rem] right-[2rem] z-[101]"
         >
           <div
-            className="w-[22rem] h-[34rem]  flex flex-col items-center gap-[1.2rem] rounded-[1rem] text-[rgb(7_32_106)]"
+            className="w-[22rem]  bg-[#15158a] p-[2rem_0rem]  flex flex-col items-center gap-[2.2rem] rounded-[1rem] text-[#fff]"
             style={{
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
               // backgroundImage: `url("https://wallpapercat.com/w/full/0/9/3/177233-1125x2436-samsung-hd-clouds-background-image.jpg")`,
             }}
           >
-            <div className="w-full  p-[1rem] flex justify-center items-center bg-[#1e1e84]">
+            <div className="w-full  p-[1rem] flex justify-center items-center ">
               <Image
                 width={100}
                 height={100}
                 className="w-[10rem] aspect-square rounded-full object-cover"
-                src={
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSudatOj4-AKUkVt9L1o3dQ3PfIuQGf0mUThg&s"
-                }
+                src={infoUserCall?.user_avatar_system || ""}
                 alt="avatar user call"
               />
             </div>
             <span className="text-[1.8rem] font-bold">
               {" "}
-              {infoUserCall?.user_email || 123}
+              {infoUserCall?.user_atlas}
             </span>
-            <div className="mt-auto flex gap-[2rem] justify-center">
+            <div className="mt-auto flex gap-[1rem] justify-center">
               <ButtonRejectCall />
               <ButtonAcceptCall />
             </div>
@@ -258,7 +256,6 @@ const SocketCallVideoProvider = ({
     window.open(url, "_blank", windowFeatures);
   };
 
-
   useEffect(() => {
     const handler = (
       event: MessageEvent<ChannelCommonData<TSocketEventCall>>
@@ -385,14 +382,19 @@ const SocketCallVideoProvider = ({
     (args: TSocketEventCall, user: UserType) => {
       if (!socket) return;
       SocketCallVideo?.emitCancelCall(socket, user as UserType, args, () => {
-        const newInfoCall = {...structuredClone(infoCall as TSocketEventCall),  call_status: "COMPLETE" as const,}
+        const newInfoCall = {
+          ...structuredClone(infoCall as TSocketEventCall),
+          call_status: "COMPLETE" as const,
+        };
         setInfoCall(newInfoCall);
-        videoCallChannel.postMessage({type: 'CLOSE_CALL', payload: newInfoCall})
+        videoCallChannel.postMessage({
+          type: "CLOSE_CALL",
+          payload: newInfoCall,
+        });
       });
     },
     [socket, user]
   );
-
 
   const handleEventCall = useMemo(() => {
     return {

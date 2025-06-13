@@ -7,7 +7,7 @@ const ButtonAcceptCall = () => {
   const {handleEventCall,  infoCall} = useContext(SocketCallVideoContext)
 
   return (
-    <button onClick={() =>handleEventCall.emitAccpetCall(infoCall!)} className="bg-[#1076fa]  animate-pulse w-[5rem] flex items-center justify-center aspect-square rounded-full text-[#fff]">
+    <button onClick={() =>handleEventCall.emitAccpetCall(infoCall!)} className="bg-[#1076fa]  animate-pulse w-[4rem] flex items-center justify-center aspect-square rounded-full text-[#fff]">
       <Phone />
     </button>
   );

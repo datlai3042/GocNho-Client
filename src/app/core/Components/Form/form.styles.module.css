@@ -1,5 +1,5 @@
 input.input-form:focus + label {
-  color: var(--color-main);
+  color: #8090ce;
   font-weight: 700;
   display: none;
 }

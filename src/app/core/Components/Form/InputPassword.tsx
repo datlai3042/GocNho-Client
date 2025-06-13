@@ -41,7 +41,7 @@ const InputPassword = <FormType extends FieldValues>(props: TProps<FormType>) =>
                                     },
                               })}
                               onFocus={() => setFocus(true)}
-                              className="inline-block w-full min-h-[4.4rem] p-[.6rem_1.2rem] border-[.1rem] border-[rgb(136, 147, 151)] bg-color-section-theme opacity-100 rounded-[.3rem] text-text-theme  placeholder:text-[1.3rem] text-[1.4rem] outline outline-[.2rem]  focus:font-semibold outline-transparent focus:outline-color-main focus:outline-3 focus:border-transparent placeholder:opacity-100 "
+                              className="inline-block w-full min-h-[4.4rem] p-[.6rem_1.2rem] border-[.1rem] border-[rgb(136, 147, 151)] bg-color-section-theme opacity-100 rounded-[.6rem] text-text-theme  placeholder:text-[1.3rem] text-[1.4rem] outline outline-[.2rem]  focus:font-semibold outline-transparent focus:outline-[#8090ce] focus:outline-3 focus:border-transparent placeholder:opacity-100 "
                               placeholder={input_placeholder}
                         />
 

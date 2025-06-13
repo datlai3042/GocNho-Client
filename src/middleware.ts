@@ -14,6 +14,7 @@ export const middleware = (request: NextRequest) => {
     if (pathAuthentication.includes(pathname)) {
         return NextResponse.next()
     }
+    console.log({client_id})
     if (!client_id) {
         return NextResponse.redirect(new URL('/login', request.url))
     }

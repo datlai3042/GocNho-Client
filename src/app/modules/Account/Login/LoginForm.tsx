@@ -20,6 +20,7 @@ import SpaceLine from "@/app/core/Components/Store/SpaceLine";
 import AuthService from "../Api/auth.service";
 import ButtonLoginGoogle from "@/app/modules/Account/OAuth2/ButtonLoginWithGoole";
 import ButtonLoginGithub from "@/app/modules/Account/OAuth2/ButtonWithGithub";
+import Image from "next/image";
 
 type TProps = {
   onClose?: (state: boolean) => void;
@@ -55,7 +56,14 @@ const LoginForm = (props: TProps) => {
       dispatch(onFetchUser({ user }));
       router.push("/dashboard");
     }
-  }, [loginMutation.isSuccess, onClose, loginMutation.data, dispatch, router, loginMutation.isPending]);
+  }, [
+    loginMutation.isSuccess,
+    onClose,
+    loginMutation.data,
+    dispatch,
+    router,
+    loginMutation.isPending,
+  ]);
 
   useEffect(() => {
     if (Object.keys(loginForm.formState.errors).length > 0) {
@@ -63,19 +71,27 @@ const LoginForm = (props: TProps) => {
   }, [loginForm.formState.errors]);
 
   return (
-    <div className="relative   min-h-[40rem] w-full h-max mx-auto mt-[4rem]  flex justify-center items-center flex-col  gap-[1.6rem] rounded-[1.2rem] p-[2.4rem_2rem]">
-      <p
-        style={{ letterSpacing: ".4rem" }}
-        className=" w-full flex  justify-center py-[2rem]"
-      >
+    <div className="relative    w-full h-max mx-auto   flex justify-center items-center flex-col  gap-[3.6rem] rounded-[1.2rem] p-[.4rem_2rem]">
+      <p className=" w-full flex items-center flex-col gap-[.6rem]  justify-center ]">
         {/* <span className="text-text-theme text-[4.2rem]">Kuro</span>
                         <span className="text-[#6262e5] text-[4.2rem]">form</span> */}
-        <span className="text-[#3d52a2] font-semibold text-[3.2rem]">
-          Đăng nhập
-        </span>
+        <div className="flex gap-[1rem]">
+          <Image
+            src={"/assets/images/themes/authentication/plane.svg"}
+            width={100}
+            height={100}
+            alt="Hình authentication 2"
+            className="  h-[4rem] object-cover w-auto"
+          />
+          <span className="text-[#020202] relative font-semibold text-[3.2rem]">
+            Đăng nhập
+          </span>
+        </div>
+
+        <span>Lorem ipsum dolor sit amet consectetur</span>
       </p>
 
-      <div className=" w-full flex flex-col gap-[2rem] ">
+      <div className=" w-full flex flex-col gap-[2.6rem] ">
         <form
           className="w-full h-full flex flex-col justify-center  gap-[.6rem] rounded-[1.2rem]"
           onSubmit={loginForm.handleSubmit(onSubmit)}
@@ -101,16 +117,16 @@ const LoginForm = (props: TProps) => {
             loading={loginMutation.isPending}
             type="submit"
             textContent="Đăng nhập"
-            className="!w-full !h-[4rem] !bg-[#3d52a2] mt-[.8rem]"
+            className="!w-full !h-[5rem] rounded-[3rem] !bg-[#3d52a2] mt-[1.2rem]"
           />
         </form>
         <SpaceLine content="Hoặc đăng nhập luôn bằng phương thức khác" />
-        <div className="w-full flex flex-col gap-[1rem]">
-          <div className="w-full h-[4.6rem]">
+        <div className="w-full flex justify-between gap-[1rem]">
+          <div className="w-[48%] h-[4.6rem]">
             <ButtonLoginGoogle />
           </div>
 
-          <div className="w-full h-[4.6rem]">
+          <div className="w-[48%] h-[4.6rem]">
             <ButtonLoginGithub />
           </div>
         </div>

@@ -11,20 +11,18 @@ const LayoutVideoCall = () => {
   return (
     <div
       id={`${styles.call__container}`}
-      className="flex flex-col"
+      className="flex flex-col "
       style={{
-        backgroundColor:
-          infoCall?.call_status === "ACCPET" 
-            ? "#fff"
-            : "",
+        backgroundColor: infoCall?.call_status === "ACCPET" ? "#fff" : "",
       }}
     >
-      {infoCall?.call_status !== "CREATE" &&
+      {infoCall &&
+        infoCall?.call_status !== "CREATE" &&
         infoCall?.call_status !== "COMPLETE" && (
           <div className="h-[3rem] min-h-[3rem] bg-[#fff] flex justify-between"></div>
         )}
-      <div style={{ height: "calc(100vh - 10rem)" }} className="">
-        {infoCall?.call_status === "CREATE" && (
+      <div style={{ height: "calc(100vh - 10rem)" }} className="relative">
+        {(infoCall?.call_status === "CREATE" || !infoCall) && (
           <span>
             <LoadingOnWaitingConnect />
           </span>
@@ -102,7 +100,11 @@ const VideoCallMe = () => {
   }, [instanceHook?.connectStream, instanceHook?.stream?.current]);
 
   return (
-    <div className={`${styles.videoCallMe__container}`}>
+    <div
+      className={`${styles.videoCallMe__container} ${
+        instanceHook?.stream?.current ? styles?.active : ""
+      }`}
+    >
       <video ref={videoMeRef} autoPlay playsInline></video>
     </div>
   );

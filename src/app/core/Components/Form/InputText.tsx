@@ -37,7 +37,7 @@ const InputText = <FormType extends FieldValues>(props: TProps<FormType>) => {
   return (
     <div
       style={style}
-      className="flex flex-col w-full  min-h-[8rem] h-max gap-[.6rem]  "
+      className="flex flex-col w-full  min-h-[8rem] h-max gap-[.6rem] "
     >
       <label
         style={{
@@ -58,7 +58,7 @@ const InputText = <FormType extends FieldValues>(props: TProps<FormType>) => {
           },
         })}
         onFocus={() => setFocus(true)}
-        className="inline-block input-form w-full min-h-[4.4rem] p-[.6rem_1.2rem] text-[1.4rem] border-[.1rem] border-[rgb(136, 147, 151)] bg-[#fff] opacity-100 rounded-[.3rem] text-text-theme  placeholder:text-[1.3rem] outline outline-[.2rem] focus:font-semibold outline-transparent focus:outline-color-main focus:border-transparent placeholder:opacity-100 focus:outline-3"
+        className="inline-block  input-form w-full min-h-[4.4rem] p-[.6rem_1.2rem] text-[1.4rem] border-[.1rem] border-[rgb(136, 147, 151)] bg-[#fff] opacity-100 rounded-[.6rem] text-text-theme  placeholder:text-[1.3rem] outline outline-[.2rem] focus:font-semibold outline-transparent focus:outline-[#8090ce] focus:border-transparent placeholder:opacity-100 focus:outline-3"
         placeholder={`Nhập ${placeholder} của bạn`}
       />
 

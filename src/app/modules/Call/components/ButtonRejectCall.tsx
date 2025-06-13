@@ -28,7 +28,7 @@ const ButtonRejectCall = () => {
   return (
     <button
       onClick={onRejectCall}
-      className="bg-[#df3d3d]  w-[5rem] flex items-center justify-center aspect-square rounded-full text-[#fff]"
+      className="bg-[#df3d3d]  w-[4rem] flex items-center justify-center aspect-square rounded-full text-[#fff]"
     >
       <PhoneOff />
     </button>

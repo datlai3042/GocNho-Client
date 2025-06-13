@@ -1,3 +1,48 @@
 #dashboard__container {
-    padding: 2rem;
+  display: flex;
+  height: 100vh;
+
+  #dashboard__content {
+    overflow: auto;
+    flex: 1;
+    // background-color: #252b7d;
+    opacity: 0.7;
+  }
+
+  #dashboard__right {
+    width: 23%;
+    min-width: 28rem;
+    position: sticky;
+    top: 0;
+    left: 0;
+    border-left: 0.1rem solid var(--border-color-line-primarily);
+
+    .dashboard__userList {
+      height: 100%;
+      overflow: auto;
+    }
+  }
+}
+
+#dashboard__right {
+  display: flex;
+  flex-direction: column;
+}
+
+#dashboard__left {
+  width: 16%;
+  min-width: 20rem;
+  padding: 2.6rem;
+  position: sticky;
+  height: 100vh;
+  right: 0;
+  top: 0;
+  // background-color: #252b7d;
+  border-right: 0.1rem solid var(--border-color-line-primarily);
+}
+@media screen and (max-width: 1023px) {
+  #dashboard__right,
+  #dashboard__left {
+    display: none;
+  }
 }
