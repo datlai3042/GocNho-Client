@@ -28,18 +28,18 @@
     position: absolute;
     top: 2.6rem;
     right: 3vw;
-    width: 20rem;
+    // width: 20rem;
     max-height: 12rem;
     video {
       object-fit: contain;
-    max-height: 12rem;
-
+      max-height: 12rem;
+      max-width: 99% !important;
     }
   }
 
   .videoCallMe__container.active {
     border: 0.1rem solid #fff0f0;
-    border-radius: .6rem;
+    border-radius: 0.6rem;
   }
 
   .videoCallController__container {
