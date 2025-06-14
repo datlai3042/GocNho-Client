@@ -54,17 +54,14 @@
     .videoCallController__wrapper {
       position: relative;
       width: 100%;
-      height: 10rem;
     }
 
     .videoCallController__videoSetting {
       border-radius: 0.8rem;
       background-color: #494b5070;
       padding: 1.2rem;
-      position: absolute;
       left: 50%;
       top: 50%;
-      transform: translate3d(-50%, -50%);
       min-width: 10rem;
       display: flex;
       justify-content: center;
