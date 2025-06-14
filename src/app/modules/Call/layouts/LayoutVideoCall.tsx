@@ -137,12 +137,12 @@ const VideoCallMe = () => {
 const VideoCallController = () => {
   return (
     <>
-      <div className={`${styles.videoCallController__container} bottom-0-0 md:bottom-[2rem]`}>
-        <div className={`${styles.videoCallController__wrapper} pb-[7rem] md:pb-0 flex justify-center items-center min-h-[8rem]`} >
+      <div className={`${styles.videoCallController__container}bottom-[2rem]`}>
+        <div className={`${styles.videoCallController__wrapper} pb-[2rem] md:pb-0 flex justify-center items-center min-h-[4rem]`} >
           <div className={`${styles.videoCallController__videoSetting}`}>
             <ButtonDisableMicro />
           </div>
-          <div className="absolute right-[50%] translate-x-[50%] md:translate-x-0 md:right-[2rem] top-[50%]">
+          <div className="absolute right-[50%] translate-x-[50%] translate-y-[50%] md:translate-x-0  md:translate-y-0 md:right-[2rem] top-[50%]">
             <ButtonEndCall />
           </div>
         </div>
