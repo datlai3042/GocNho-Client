@@ -9,6 +9,27 @@ import CountdownTimer from "../components/CountCallTime";
 
 const LayoutVideoCall = () => {
   const { infoCall } = useContext(CallContext);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [heightContent, setHeightContent] = useState<string | number>('calc(100vh - 3rem)');
+
+
+  useEffect(() => {
+    const handleBrowserResize = () => {
+      if (containerRef.current) {
+        const windowHeight = window.innerHeight;
+        const heightContent =
+          windowHeight - containerRef.current.offsetTop - 10;
+        setHeightContent(heightContent);
+      }
+    };
+
+    handleBrowserResize();
+    window.addEventListener("resize", handleBrowserResize);
+
+    return () => {
+      window.removeEventListener("resize", handleBrowserResize);
+    };
+  }, [infoCall]);
   return (
     <div
       id={`${styles.call__container}`}
@@ -20,7 +41,11 @@ const LayoutVideoCall = () => {
       {infoCall &&
         infoCall?.call_status !== "CREATE" &&
         infoCall?.call_status !== "COMPLETE" && <VideoCallInfo />}
-      <div style={{ height: "calc(100vh - 6rem)" }} className="relative">
+      <div
+        style={{ height: heightContent }}
+        ref={containerRef}
+        className="relative"
+      >
         {(infoCall?.call_status === "CREATE" || !infoCall) && (
           <span>
             <LoadingOnWaitingConnect />
@@ -45,7 +70,7 @@ const LoadingOnWaitingConnect = () => {
   return (
     <div className=" absolute left-[50%] text-[#fff] top-[50%] translate-x-[-50%] translate-y-[-50%] bg-transparent flex flex-col items-center gap-[2.6rem]">
       <span className=" text-[2rem]">Đang kết nối...</span>
-      <CountdownTimer initialSeconds={0}/>
+      <CountdownTimer initialSeconds={0} />
       <div className="flex gap-[1.4rem] justify-center items-center">
         <div className="h-8 w-8 bg-[#fff] rounded-full animate-bounce [animation-delay:-0.3s]" />
         <div className="h-8 w-8 bg-[#fff] rounded-full animate-bounce [animation-delay:-0.15s]" />
@@ -71,8 +96,10 @@ const VideoCallInfo = () => {
 
   return (
     <div className="min-h-[4rem] py-[1rem] bg-[#fff] flex flex-wrap  justify-between text-[#a452f8]">
-      <span className="font-semibold text-[1.6rem]">{infoCall?.other?.user_email}</span>
-     <CountdownTimer initialSeconds={0}/>
+      <span className="font-semibold text-[1.6rem]">
+        {infoCall?.other?.user_email}
+      </span>
+      <CountdownTimer initialSeconds={0} />
     </div>
   );
 };
@@ -138,7 +165,9 @@ const VideoCallController = () => {
   return (
     <>
       <div className={`${styles.videoCallController__container} bottom-[3rem]`}>
-        <div className={`${styles.videoCallController__wrapper} pb-[4rem] md:pb-0 flex justify-center items-center min-h-[4rem]`} >
+        <div
+          className={`${styles.videoCallController__wrapper} pb-[4rem] md:pb-0 flex justify-center items-center min-h-[4rem]`}
+        >
           <div className={`${styles.videoCallController__videoSetting}`}>
             <ButtonDisableMicro />
           </div>
