@@ -63,7 +63,8 @@
       padding: 1.2rem;
       position: absolute;
       left: 50%;
-      transform: translateX(-50%);
+      top: 50%;
+      transform: translate3d(-50%, -50%);
       min-width: 10rem;
       display: flex;
       justify-content: center;
