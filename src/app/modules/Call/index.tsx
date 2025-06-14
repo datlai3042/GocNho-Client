@@ -121,6 +121,7 @@ const CallView = () => {
 
        if (data?.type === 'CLOSE_CALL') {
         setInfoCall(data?.payload);
+        console.log({data})
       }
     };
     videoCallChannel.addEventListener("message", handler);
@@ -147,7 +148,7 @@ const CallView = () => {
     return () => {
       window.removeEventListener("beforeunload", eventLeaving);
     };
-  }, []);
+  }, [infoCall]);
 
   if (!trigger) return <>...loading</>;
 

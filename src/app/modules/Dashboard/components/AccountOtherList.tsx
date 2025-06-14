@@ -8,14 +8,14 @@ import Image from "next/image";
 
 const UserBlock = ({ user }: { user: UserType }) => {
   return (
-    <div className=" h-[8rem]  flex-shrink-0 p-[2rem] flex items-center justify-between border-b-[.1rem] border-[var(--border-color-line-primarily)]">
+    <div className=" h-[8rem]  text-[1.3rem] flex-shrink-0 p-[1rem] flex items-center justify-between border-b-[.1rem] border-[var(--border-color-line-primarily)]">
       <div className="flex items-center space-x-3 gap-[.4rem] w-[80%]">
         <Image
           src={user?.user_avatar_system || ""}
           width={80}
           height={80}
           alt="avatar"
-          className="w-[4.6rem] h-[4.6rem] rounded-full"
+          className="w-[4.2rem] h-[4.2rem] rounded-full"
         />
         <div className=" max-w-[100%]">
           <h3 className="font-semibold text-gray-900  truncate max-w-[80%]">{user?.user_email}</h3>
@@ -40,7 +40,7 @@ const AccountOtherList = () => {
     const handleBrowserResize = () => {
       if (contaienrRef.current) {
         const windowHeight = window.innerHeight;
-        const heightContent = windowHeight - contaienrRef.current.offsetTop;
+        const heightContent = windowHeight - contaienrRef.current.offsetTop - 10;
         setHeightContent(heightContent);
       }
     };

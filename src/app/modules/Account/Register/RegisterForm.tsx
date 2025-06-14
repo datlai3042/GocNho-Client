@@ -71,11 +71,11 @@ const RegisterForm = (props: TProps) => {
   };
 
   return (
-    <div className="relative w-[42rem] mb-[1.6rem] h-max flex justify-start xl:justify-center items-center flex-col  gap-[3.6rem] rounded-[1.2rem] p-[.4rem_2rem]">
+    <div className="relative mb-[1.6rem] h-max flex justify-start xl:justify-center items-center flex-col  gap-[3.6rem] rounded-[1.2rem] p-[.4rem_2rem]">
       <p className=" w-full flex items-center flex-col gap-[.6rem]  justify-center ]">
         {/* <span className="text-text-theme text-[4.2rem]">Kuro</span>
                                          <span className="text-[#6262e5] text-[4.2rem]">form</span> */}
-        <div className="flex gap-[1rem]">
+        <div className="flex flex-wrap justify-center gap-[1rem]">
           <Image
             src={"/assets/images/themes/authentication/plane.svg"}
             width={100}

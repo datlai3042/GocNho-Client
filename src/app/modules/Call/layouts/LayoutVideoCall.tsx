@@ -5,6 +5,7 @@ import { CallContext } from "..";
 import ButtonDisableMicro from "../components/ButtonDisableMicro";
 import ButtonEndCall from "../components/ButtonEndCall";
 import styles from "../styles/styles.module.scss";
+import CountdownTimer from "../components/CountCallTime";
 
 const LayoutVideoCall = () => {
   const { infoCall } = useContext(CallContext);
@@ -18,10 +19,8 @@ const LayoutVideoCall = () => {
     >
       {infoCall &&
         infoCall?.call_status !== "CREATE" &&
-        infoCall?.call_status !== "COMPLETE" && (
-          <div className="h-[3rem] min-h-[3rem] bg-[#fff] flex justify-between"></div>
-        )}
-      <div style={{ height: "calc(100vh - 10rem)" }} className="relative">
+        infoCall?.call_status !== "COMPLETE" && <VideoCallInfo />}
+      <div style={{ height: "calc(100vh - 6rem)" }} className="relative">
         {(infoCall?.call_status === "CREATE" || !infoCall) && (
           <span>
             <LoadingOnWaitingConnect />
@@ -44,8 +43,9 @@ const LayoutVideoCall = () => {
 
 const LoadingOnWaitingConnect = () => {
   return (
-    <div className=" absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] bg-transparent flex flex-col gap-[2.6rem]">
-      <span className="text-[#fff] text-[2rem]">Đang kết nối...</span>
+    <div className=" absolute left-[50%] text-[#fff] top-[50%] translate-x-[-50%] translate-y-[-50%] bg-transparent flex flex-col items-center gap-[2.6rem]">
+      <span className=" text-[2rem]">Đang kết nối...</span>
+      <CountdownTimer initialSeconds={0}/>
       <div className="flex gap-[1.4rem] justify-center items-center">
         <div className="h-8 w-8 bg-[#fff] rounded-full animate-bounce [animation-delay:-0.3s]" />
         <div className="h-8 w-8 bg-[#fff] rounded-full animate-bounce [animation-delay:-0.15s]" />
@@ -55,8 +55,32 @@ const LoadingOnWaitingConnect = () => {
   );
 };
 
+const VideoCallInfo = () => {
+  const { infoCall } = useContext(CallContext);
+  const [count, setCount] = useState(0);
+  const timerId = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    timerId.current = setInterval(() => {
+      setCount((prev) => prev + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(timerId.current as NodeJS.Timeout);
+    };
+  }, []);
+
+  return (
+    <div className="min-h-[4rem] py-[1rem] bg-[#fff] flex flex-wrap  justify-between text-[#a452f8]">
+      <span className="font-semibold text-[1.6rem]">{infoCall?.other?.user_email}</span>
+     <CountdownTimer initialSeconds={0}/>
+    </div>
+  );
+};
+
 const VideoCallRemote = () => {
   const { instanceHook } = useContext(CallContext);
+  const { infoCall } = useContext(CallContext);
+  console.log({ infoCall });
   const videoRemoteRef = useRef<HTMLVideoElement | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   // Cập nhật remoteStream mỗi khi instanceHook.hasStream thay đổi
@@ -112,10 +136,18 @@ const VideoCallMe = () => {
 
 const VideoCallController = () => {
   return (
-    <div className={`${styles.videoCallController__container}`}>
-      <ButtonDisableMicro />
-      <ButtonEndCall />
-    </div>
+    <>
+      <div className={`${styles.videoCallController__container}`}>
+        <div className={`${styles.videoCallController__wrapper}`}>
+          <div className={`${styles.videoCallController__videoSetting}`}>
+            <ButtonDisableMicro />
+          </div>
+          <div className="absolute right-[50%] translate-x-[50%] md:translate-x-0 md:right-[2rem] top-[50%] translate-y-[50%]">
+            <ButtonEndCall />
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

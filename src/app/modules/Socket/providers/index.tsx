@@ -14,7 +14,13 @@ import {
   TSocketCallVideoInfo,
   TSocketEventCall,
 } from "../../Call/providers/socketCallVideo.provider";
-const URL = process.env.NEXT_PUBLIC_MODE === "PRO" ? process.env.NEXT_PUBLIC_BACK_END_URL : "http://localhost:4004";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/Redux/store";
+import { usePathname } from "next/navigation";
+const URL =
+  process.env.NEXT_PUBLIC_MODE === "PRO"
+    ? process.env.NEXT_PUBLIC_BACK_END_URL
+    : "http://localhost:4004";
 
 export type TSocketContext = {
   socket: Socket | null;
@@ -37,6 +43,8 @@ export const SocketContext = createContext<TSocketContext>({
 
 const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socketInstance, setSocketInstance] = useState<Socket | null>(null);
+  const user = useSelector((state: RootState) => state.authStore.user);
+  const pathname = usePathname()
 
   const handleEvent = useMemo(() => {
     return {
@@ -49,12 +57,15 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [socketInstance]);
 
   useEffect(() => {
+    if (!user) return;
+    if(['/call'].includes(pathname)) return
     if (!socketInstance) {
       setSocketInstance(io(URL, socketConfig));
       return;
     }
 
     const onConnect = () => {
+      console.log('CONNECT', pathname)
       socketInstance.emit("init", "hi");
     };
 
@@ -63,7 +74,7 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       socketInstance.off("connect", onConnect);
     };
-  }, [socketInstance]);
+  }, [socketInstance, user]);
 
   return (
     <SocketContext.Provider value={{ socket: socketInstance, handleEvent }}>

@@ -29,9 +29,9 @@ const ButtonEndCall = () => {
   return (
     <button
       onClick={onRejectCall}
-      className=" bg-[#df3d3d] w-[4.4rem] flex items-center justify-center aspect-square rounded-full text-[#fff]"
+      className=" bg-[#df3d3d] w-max flex items-center justify-center p-[.8rem] rounded-[.4rem] text-[#fff]"
     >
-      <PhoneOff size={20} />
+      <span className="text-[#fff]">Kết thúc cuộc gọi</span>
     </button>
   );
 };

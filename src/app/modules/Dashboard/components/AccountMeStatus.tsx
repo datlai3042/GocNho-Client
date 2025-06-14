@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 const AccountMeStatus = () => {
   const user = useSelector((state: RootState) => state.authStore.user);
-
+console.log({avatar: user?.user_avatar_system})
   return (
     // <div className="w-full h-[8rem]  flex-shrink-0 p-[2rem] flex items-center border-b-[.1rem] border-[var(--border-color-line-primarily)]">
     //   <Image
