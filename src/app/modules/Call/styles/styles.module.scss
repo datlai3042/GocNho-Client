@@ -99,10 +99,10 @@
     right: 12vw;
     position: fixed;
     max-height: 12rem !important;
-    width: 40vw !important;
+    width: 20vw !important;
     video {
       width: 100%;
-      object-fit: cover !important;
+      object-fit: contain !important;
       max-height: 10rem;
       max-width: 100% !important;
     }
