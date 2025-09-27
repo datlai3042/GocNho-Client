@@ -7,9 +7,9 @@ export default function CountdownTimer({ initialSeconds = 0 }) {
   useEffect(() => {
     let interval = null;
 
-      interval = setInterval(() => {
-        setSeconds((prevSeconds) => prevSeconds + 1);
-      }, 1000);
+    interval = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
 
     return () => {
       if (interval) clearInterval(interval);
@@ -30,20 +30,24 @@ export default function CountdownTimer({ initialSeconds = 0 }) {
 
   const { hours, minutes, seconds: displaySeconds } = formatTime(seconds);
 
- 
   return (
     <div className="w-max">
-      <div className="text-center transition-all duration-300">
+      <div className="text-center transition-all duration-300 text-[#7e8bad] ">
         <div className="flex items-center justify-center space-x-2 mb-2">
-          <span className="text-3xl font-mono font-bold text-inherit">
-            {hours}
-          </span>
-          <span className="text-2xl text-inherit">:</span>
-          <span className="text-3xl font-mono font-bold text-inherit">
+          {+hours > 0 && (
+            <>
+              <span className="text-[1.2rem] font-mono  text-inherit">
+                {hours}
+              </span>
+              <span className="text-[1.2rem] text-inherit">:</span>
+            </>
+          )}
+
+          <span className="text-[1.2rem] font-mono  text-inherit">
             {minutes}
           </span>
-          <span className="text-2xl text-inherit">:</span>
-          <span className="text-3xl font-mono font-bold text-inherit">
+          <span className="text-[1.2rem] text-inherit">:</span>
+          <span className="text-[1.2rem] font-mono  text-inherit">
             {displaySeconds}
           </span>
         </div>

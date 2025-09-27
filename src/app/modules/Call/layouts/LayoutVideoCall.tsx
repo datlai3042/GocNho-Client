@@ -10,8 +10,9 @@ import CountdownTimer from "../components/CountCallTime";
 const LayoutVideoCall = () => {
   const { infoCall } = useContext(CallContext);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [heightContent, setHeightContent] = useState<string | number>('calc(100vh - 3rem)');
-
+  const [heightContent, setHeightContent] = useState<string | number>(
+    "calc(100vh - 3rem)"
+  );
 
   useEffect(() => {
     const handleBrowserResize = () => {
@@ -30,6 +31,36 @@ const LayoutVideoCall = () => {
       window.removeEventListener("resize", handleBrowserResize);
     };
   }, [infoCall]);
+
+  if (false) {
+    return (
+      <div
+        id={`${styles.call__container}`}
+        className="flex flex-col "
+        style={{
+          backgroundColor: infoCall?.call_status === "ACCPET" ? "#fff" : "",
+        }}
+      >
+        <div
+          style={{ height: heightContent }}
+          ref={containerRef}
+          className="relative"
+        >
+          <div className="flex justify-between absolute top-[2rem] z-[999] w-full ">
+            {true && <VideoCallInfo />}
+            <VideoCallMeDebugger />
+          </div>
+          <VideoCallControllerDebugger />
+
+          <>
+            <VideoCallRemoteDebugger />
+          </>
+
+          {infoCall?.call_status === "COMPLETE" && <VideoCallEndUI />}
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       id={`${styles.call__container}`}
@@ -38,28 +69,22 @@ const LayoutVideoCall = () => {
         backgroundColor: infoCall?.call_status === "ACCPET" ? "#fff" : "",
       }}
     >
-      {infoCall &&
-        infoCall?.call_status !== "CREATE" &&
-        infoCall?.call_status !== "COMPLETE" && <VideoCallInfo />}
       <div
         style={{ height: heightContent }}
         ref={containerRef}
         className="relative"
       >
-        {(infoCall?.call_status === "CREATE" || !infoCall) && (
-          <span>
-            <LoadingOnWaitingConnect />
-          </span>
-        )}
-        {infoCall?.call_status !== "COMPLETE" && <VideoCallController />}
+        <div className="flex justify-between gap-[4rem] w-full h-full">
+          {true && <VideoCallInfo />}
+            <>
+          <VideoCallRemote />
+        </>
+          <VideoCallMe/>
+        </div>
+        <VideoCallController />
 
-        <VideoCallMe />
-        {infoCall?.call_status === "REJECT" && <span>Không bắt máy</span>}
-        {infoCall?.call_status === "ACCPET" && (
-          <>
-            <VideoCallRemote />
-          </>
-        )}
+      
+
         {infoCall?.call_status === "COMPLETE" && <VideoCallEndUI />}
       </div>
     </div>
@@ -95,10 +120,13 @@ const VideoCallInfo = () => {
   }, []);
 
   return (
-    <div className="min-h-[4rem] py-[1rem] bg-[#fff] flex flex-wrap  justify-between text-[#a452f8]">
-      <span className="font-semibold text-[1.6rem]">
-        {infoCall?.other?.user_email}
-      </span>
+    <div className=" p-[.6rem_1.2rem] bg-[#ececec] max-w-[26rem] w-[26rem] h-[6rem] rounded-[.3rem] flex flex-col justify-center text-[#333] ">
+      <div className="flex items-center gap-[1rem]">
+        <div className="w-[1rem] h-[1rem] bg-green-500 rounded-full"></div>
+        <span className="font-semibold text-[1.5rem]">
+          {infoCall?.other?.user_email}
+        </span>
+      </div>
       <CountdownTimer initialSeconds={0} />
     </div>
   );
@@ -136,6 +164,38 @@ const VideoCallRemote = () => {
   );
 };
 
+const VideoCallRemoteDebugger = () => {
+  const { instanceHook } = useContext(CallContext);
+  const { infoCall } = useContext(CallContext);
+  console.log({ infoCall });
+  const videoRemoteRef = useRef<HTMLVideoElement | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  // Cập nhật remoteStream mỗi khi instanceHook.hasStream thay đổi
+  useEffect(() => {
+    if (instanceHook?.hasStream && instanceHook.streamRemote?.current) {
+      setRemoteStream(instanceHook.streamRemote.current);
+    }
+  }, [instanceHook?.hasStream, instanceHook?.streamRemote?.current]);
+
+  // Gán remoteStream vào video element
+  useEffect(() => {
+    if (videoRemoteRef.current && remoteStream) {
+      videoRemoteRef.current.srcObject = remoteStream;
+    }
+  }, [remoteStream]);
+
+  return (
+    <div className={`${styles.videoCallRemote__container}`}>
+      <video
+        ref={videoRemoteRef}
+        autoPlay
+        playsInline
+        style={{ width: "34rem", background: "red" }}
+      ></video>
+    </div>
+  );
+};
+
 const VideoCallMe = () => {
   const { instanceHook } = useContext(CallContext);
   const videoMeRef = useRef<HTMLVideoElement | null>(null);
@@ -161,6 +221,36 @@ const VideoCallMe = () => {
   );
 };
 
+const VideoCallMeDebugger = () => {
+  const { instanceHook } = useContext(CallContext);
+  const videoMeRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (
+      instanceHook?.connectStream &&
+      instanceHook.stream?.current &&
+      videoMeRef.current
+    ) {
+      videoMeRef.current.srcObject = instanceHook.stream.current;
+    }
+  }, [instanceHook?.connectStream, instanceHook?.stream?.current]);
+
+  return (
+    <div
+      className={`${styles.videoCallMe__container} ${
+        instanceHook?.stream?.current ? styles?.active : ""
+      }`}
+    >
+      <video
+        ref={videoMeRef}
+        autoPlay
+        playsInline
+        style={{ background: "#ccc" }}
+      ></video>
+    </div>
+  );
+};
+
 const VideoCallController = () => {
   return (
     <>
@@ -180,6 +270,24 @@ const VideoCallController = () => {
   );
 };
 
+const VideoCallControllerDebugger = () => {
+  return (
+    <>
+      <div className={`${styles.videoCallController__container} bottom-[3rem]`}>
+        <div
+          className={`${styles.videoCallController__wrapper} pb-[4rem] md:pb-0 flex justify-center items-center min-h-[4rem]`}
+        >
+          <div className={`${styles.videoCallController__videoSetting}`}>
+            <ButtonDisableMicro />
+          </div>
+          <div className="absolute right-[50%] translate-x-[50%] translate-y-[50%] md:translate-x-0  md:translate-y-0 md:right-[2rem] top-[50%]">
+            <ButtonEndCall />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 const VideoCallEndUI = () => {
   return (
     <div className={`${styles.videoCallEndUI__container}`}>

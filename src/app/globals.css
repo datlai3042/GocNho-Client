@@ -23,6 +23,7 @@ body {
 
 @layer base {
   :root {
+    --background-one: #fff;
     --bg-input-core: #ffffff;
     --bg-input-core-2: #000000;
     --bg-dark-readOnly: #08112b;
@@ -42,7 +43,7 @@ body {
     --bg-form-nav: #fff;
     --bg-input-theme: #fff;
     --btn-design: #2d68ff;
-    --border-color-line-primarily: #edefee;
+    --border-color-line-primarily: #edefee26;
     --bg-model: #eef1f9;
     --color-btn-primarily: rgb(37, 104, 170);
     --toast-success: #4299de;
@@ -106,6 +107,10 @@ body {
     --bg-scrollbar-thumb-normal: rgba(203, 191, 191, 0.758);
     --bg-scrollbar-track-normal: #2c2c2c;
   }
+}
+
+body {
+  background-color: var(--background-one);
 }
 
 input.input-form:focus + label {

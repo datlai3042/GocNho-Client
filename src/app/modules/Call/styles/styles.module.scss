@@ -1,5 +1,5 @@
 #call__container {
-  background-color: #242323;
+  background-color: rgb(12 18 23 / 96%);
   position: relative;
   width: 100%;
   height: 100vh;
@@ -11,35 +11,36 @@
     border-radius: 0.8rem;
   }
   .videoCallRemote__container {
+    height: 88%;
     width: 100%;
-    height: 100%;
     display: flex;
     justify-content: center;
     align-items: start;
-    background-color: #242323;
-    border-radius: 0.8rem;
+    // background-color: #242323;
+    // border-radius: 0.8rem;
   }
   .videoCallRemote__container video {
     width: 100% !important;
-    object-fit: contain !important;
+    object-fit: cover !important;
     height: 100%;
   }
   .videoCallMe__container {
-    position: absolute;
-    top: 2.6rem;
-    right: 3vw;
+    // position: absolute;
+    // top: 2.6rem;
+    // right: 3vw;
     // width: 20rem;
     max-height: 12rem;
+    width: 33rem;
     video {
       object-fit: contain;
       max-height: 12rem;
-      max-width: 99% !important;
+      max-width: 100% !important;
     }
   }
 
   .videoCallMe__container.active {
-    border: 0.1rem solid #fff0f0;
-    border-radius: 0.6rem;
+    border: 0.1rem solid #fff0f03d;
+    // border-radius: 0.6rem;
   }
 
   .videoCallController__container {
@@ -85,6 +86,6 @@
     display: flex;
     justify-content: center;
     align-items: center !important;
-    background-color: #242323;
+    // background-color: #242323;
   }
 }
