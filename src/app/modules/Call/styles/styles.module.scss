@@ -21,7 +21,7 @@
   }
   .videoCallRemote__container video {
     width: 100% !important;
-    object-fit: cover !important;
+    // object-fit: cover !important;
     height: 100%;
   }
   .videoCallMe__container {
@@ -87,5 +87,23 @@
     justify-content: center;
     align-items: center !important;
     // background-color: #242323;
+  }
+}
+@media screen and (max-width: 767px) {
+    .videoCallMe__container {
+    // position: absolute;
+    // top: 2.6rem;
+    // right: 3vw;
+    // width: 20rem;
+    top: 2.5rem;
+    right: 10rem;
+    position: fixed;
+    max-height: 12rem !important;
+    width: 16rem !important;
+    video {
+      object-fit: contain;
+      max-height: 10rem;
+      max-width: 100% !important;
+    }
   }
 }

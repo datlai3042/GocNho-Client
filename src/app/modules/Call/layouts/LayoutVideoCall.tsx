@@ -120,7 +120,7 @@ const VideoCallInfo = () => {
   }, []);
 
   return (
-    <div className=" p-[.6rem_1.2rem] bg-[#ececec] max-w-[26rem] w-[26rem] h-[6rem] rounded-[.3rem] flex flex-col justify-center text-[#333] ">
+    <div className="hidden md:flex p-[.6rem_1.2rem] bg-[#ececec] max-w-[26rem] w-[26rem] h-[6rem] rounded-[.3rem] flex-col justify-center text-[#333] ">
       <div className="flex items-center gap-[1rem]">
         <div className="w-[1rem] h-[1rem] bg-green-500 rounded-full"></div>
         <span className="font-semibold text-[1.5rem]">
